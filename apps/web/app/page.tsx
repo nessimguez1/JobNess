@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Inbox, Target, BarChart2, Settings as SettingsIcon, RefreshCw, Lock } from 'lucide-react';
+import { Inbox, Building2, BarChart2, Settings as SettingsIcon, RefreshCw, Lock } from 'lucide-react';
 import Feed from '../components/Feed';
-import Targets from '../components/Targets';
+import Companies from '../components/Companies';
 import Stats from '../components/Stats';
 import Settings from '../components/Settings';
 
-type Tab = 'feed' | 'targets' | 'stats' | 'settings';
+type Tab = 'feed' | 'companies' | 'stats' | 'settings';
 
 export default function Terminal() {
   const [activeTab, setActiveTab] = useState<Tab>('feed');
@@ -35,10 +35,10 @@ export default function Terminal() {
 
           <nav className="flex items-center gap-0.5">
             {([
-              { k: 'feed' as const,     label: 'Feed',     icon: <Inbox    size={13} /> },
-              { k: 'targets' as const,  label: 'Targets',  icon: <Target   size={13} /> },
-              { k: 'stats' as const,    label: 'Stats',    icon: <BarChart2 size={13} /> },
-              { k: 'settings' as const, label: 'Settings', icon: <SettingsIcon size={13} /> },
+              { k: 'feed' as const,      label: 'Feed',      icon: <Inbox       size={13} /> },
+              { k: 'companies' as const, label: 'Companies', icon: <Building2   size={13} /> },
+              { k: 'stats' as const,     label: 'Stats',     icon: <BarChart2   size={13} /> },
+              { k: 'settings' as const,  label: 'Settings',  icon: <SettingsIcon size={13} /> },
             ]).map(t => (
               <button
                 key={t.k}
@@ -69,7 +69,7 @@ export default function Terminal() {
       <main className="px-6 py-5">
         <div className="max-w-[1400px] mx-auto">
           {activeTab === 'feed' && <Feed />}
-          {activeTab === 'targets' && <Targets />}
+          {activeTab === 'companies' && <Companies />}
           {activeTab === 'stats' && <Stats />}
           {activeTab === 'settings' && <Settings />}
         </div>

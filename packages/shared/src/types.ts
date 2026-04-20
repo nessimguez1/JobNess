@@ -56,7 +56,7 @@ export interface Job extends ScrapedJob {
   follow_up_at?: string;
 }
 
-/** Target company row */
+/** Target company row (legacy — kept for type compatibility with old `targets` table) */
 export interface Target {
   id: string;
   name: string;
@@ -68,6 +68,29 @@ export interface Target {
   notes?: string;
   priority: TargetPriority;
   created_at: string;
+}
+
+export type Ats = 'greenhouse' | 'lever' | 'workday' | 'custom';
+export type CompanySource = 'config' | 'manual';
+
+/** Company row — canonical directory, seeded from career-pages.ts */
+export interface Company {
+  id: string;
+  name: string;
+  mono?: string;
+  slug?: string;
+  ats?: Ats;
+  website?: string;
+  linkedin?: string;
+  sector?: string;
+  priority: TargetPriority;
+  notes?: string;
+  pinned: boolean;
+  job_count: number;
+  last_job_at?: string;
+  source: CompanySource;
+  created_at: string;
+  updated_at: string;
 }
 
 /** Settings row (always id = 1) */

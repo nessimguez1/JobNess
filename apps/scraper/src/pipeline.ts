@@ -7,6 +7,7 @@ import { run as runDrushim } from './scrapers/drushim.js';
 import { scoreJob } from './scorer.js';
 import { parseSalaryNIS } from './utils/fx.js';
 import { logger } from './utils/logger.js';
+import { syncCompanies, refreshCompanyJobStats } from './utils/sync-companies.js';
 
 let _supabase: ReturnType<typeof createClient> | null = null;
 function getSupabase() {
@@ -143,6 +144,10 @@ export async function runAllScrapers(): Promise<void> {
   logger.info('scrape run started');
 
   const db = getSupabase();
+
+  // Sync company directory from career-pages config before scraping.
+  await syncCompanies(db);
+
   const [{ data: bl }, { data: settings }] = await Promise.all([
     db.from('blocklist').select('pattern'),
     db.from('settings').select('min_salary_nis').eq('id', 1).single(),
@@ -155,6 +160,9 @@ export async function runAllScrapers(): Promise<void> {
   await runSource('HiddenMarket', runLinkedInPosts, patterns, minSalary);
   await runSource('CareerPage', runCareerPages, patterns, minSalary);
   await runSource('Drushim', runDrushim, patterns, minSalary);
+
+  // Refresh per-company job counts so the Companies page is in sync.
+  await refreshCompanyJobStats(db);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   await (getSupabase().from('settings') as any).update({ last_sync_at: new Date().toISOString() }).eq('id', 1);
