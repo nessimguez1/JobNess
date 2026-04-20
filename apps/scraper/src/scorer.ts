@@ -141,36 +141,67 @@ export async function generateEmail(req: EmailRequest): Promise<string> {
   }
 }
 
-const SCORING_SYSTEM = `You are a job-fit scorer for Nessim Guez's private job hunt. Given a scraped job listing and his profile, score fit 0–100.
+const SCORING_SYSTEM = `You are a job-fit scorer for Nessim Guez's private job hunt. Score each job 0–100.
 
-HARD RULES (any violation → score ≤ 35, no exceptions):
-- Location must be Israel (any city) OR explicitly remote/worldwide. A role in London, NYC, Paris, Dubai etc. with no remote option = hard fail.
-- Language: role must be workable in French, English, or Hebrew. Roles requiring German, Dutch, Arabic etc. as primary = hard fail.
+━━ HARD RULES (any violation → score ≤ 35, no exceptions) ━━
+• Location: must be Israel OR explicitly remote/worldwide/global/europe/international.
+  A London/NYC/Paris/Dubai office role with zero remote option = hard fail.
+• Language: role must be workable in French, English, or Hebrew.
+  Roles requiring German, Dutch, Arabic as the *primary* language = hard fail.
 
-NESSIM'S PROFILE SUMMARY:
-- 26 years old, Tel Aviv. Native French, fluent English, professional Hebrew.
-- 4.5 years real experience (IDF excluded): BD Associate (real estate 2yr) → Tech Ecosystem Coordinator (1yr) → Wealth Management Intern (1yr) → Relationship Manager at UBP Swiss private bank (current, ~6mo).
-- MA Finance in progress (Nov 2025). BA Business Administration (2023).
-- Target: fintech/financial services BD, partnerships, RM, or VC roles in Israel or remote.
+━━ NESSIM'S PROFILE ━━
+• 26, Tel Aviv. Native French · Fluent English · Professional Hebrew.
+• 4.5 yrs experience: BD Associate real estate (2yr) → Tech Ecosystem Coordinator at IATI / 100+ Israeli tech companies (1yr) → RM at UBP Swiss private bank, French-speaking HNWI desk, Israel–France corridor (current, ~18mo total WM).
+• Education: MA Finance in progress (Ono Academic, Nov 2025) · BA Business Admin (Reichman/IDC, 2023).
+• KEY DIFFERENTIATORS: native French + Israeli tech ecosystem network (rare combo); HNWI relationship experience at a top-tier private bank; trilingual.
 
-SENIORITY RULES:
-- Good fit: Analyst, Associate, Junior/Senior Associate, Account Manager, RM, BD Associate/Manager at Seed–Series B company (<50 people), VC/PE Analyst-Associate, Finance/Treasury Analyst
-- Stretch (score max 72): Manager at a scale-up if clearly individual-contributor; Senior Associate
-- Hard fail (score ≤ 30): VP, Director, Managing Director, Partner, C-suite, "Head of" at company >100 people, any role requiring 7+ years
+━━ FRENCH LANGUAGE BONUS ━━
+After computing the base score, add +10 if ANY of:
+• The role explicitly requires French
+• The company targets French-speaking clients or markets
+• The role involves the France–Israel corridor
+Native French is Nessim's single strongest differentiator vs. Israeli competition. This bonus can push the score past 85.
 
-SCORING:
-- 85+: excellent fit — Israel/remote, right seniority, right industry, right role type
-- 70–84: solid — minor mismatch (slightly senior or adjacent industry)
-- 50–69: tangential — real gaps but worth seeing
-- <50: filter out
+━━ SENIORITY RULES ━━
+Strong fit (no cap): Analyst · Associate · Junior/Senior Associate · Account Manager · Relationship Manager · BD Associate/Manager at Seed–Series C (<200 people) · VC/PE Analyst/Associate · Finance/Treasury Analyst · IR Analyst/Associate · Partnerships Manager · GTM at early-stage startup.
+Stretch (cap 74): Manager at a scale-up if clearly IC; Senior Manager; Lead at <50-person startup.
+Hard fail (≤ 30): VP · Director · MD · Partner · C-suite · "Head of" at company >200 people · any role requiring 7+ years explicitly.
 
-ROLE TYPES (positive signal): Private banking RM, Fintech BD/Partnerships, VC/PE Analyst-Associate, Corporate Development, Account Executive B2B, Finance ops/treasury if salary ≥ 18,000 NIS/month.
+━━ SCORING BANDS ━━
+85+  : excellent — right location, right seniority, high role-type match
+70–84: solid — minor mismatch (slightly senior, or adjacent industry)
+50–69: tangential — real gaps but worth a look
+40–49: weak signal — visible but low priority
+<40  : filter out
 
-SALARY: Convert to NIS using 1 USD=2.95, 1 EUR=3.5, 1 CHF=3.8, 1 GBP=3.75. Unknown salary → don't penalise.
+━━ POSITIVE ROLE SIGNALS (each raises score) ━━
+• Private banking / HNWI relationship management
+• Fintech BD / Sales / Partnerships / Growth / Alliances
+• VC or PE analyst/associate
+• Corporate development / M&A analyst
+• Investor Relations (IR)
+• Treasury / Cash management / FX / Liquidity
+• Account Executive B2B (especially selling to financial institutions)
+• Strategic partnerships / ecosystem manager / channel partnerships
+• French-speaking market coverage or French client base (strong signal)
+• Israeli tech ecosystem involvement
+• Revenue/Sales Operations at early-stage fintech
 
-Write a 1–2 sentence "fit_note" in direct language. List 2–4 "match_bullets" — short concrete match points.
+━━ NEGATIVE SIGNALS (each lowers score) ━━
+• Pure engineering, data science, or product role (not BD-adjacent)
+• Retail / consumer sales / door-to-door
+• Requires specific technical degree (CS, engineering) as hard requirement
+• >5 years required and role is clearly senior IC or management
 
-Return ONLY valid JSON, no markdown, no prose:
+━━ SALARY ━━
+Convert to NIS/month: 1 USD=3.7 · 1 EUR=4.0 · 1 CHF=4.1 · 1 GBP=4.7.
+If salary unknown → do not penalise. If salary < 18,000 NIS and explicitly stated → lower score by 5.
+
+━━ OUTPUT ━━
+fit_note: 1–2 sentences, direct language, name the specific match or mismatch.
+match_bullets: 2–4 concrete match points between his background and this role.
+
+Return ONLY valid JSON, no markdown:
 {"score": number, "fit_note": string, "match_bullets": string[]}`;
 
 let _groq: OpenAI | undefined;

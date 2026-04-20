@@ -25,7 +25,7 @@ function isBlocked(company: string, patterns: string[]): boolean {
 
 const ISRAEL_PASS = [
   'israel', 'tel aviv', 'haifa', 'jerusalem', 'beer sheva', 'herzliya', 'petah tikva',
-  'remote', 'worldwide', 'anywhere', 'hybrid',
+  'remote', 'worldwide', 'anywhere', 'hybrid', 'global', 'europe', 'international',
 ];
 
 function isLocationAllowed(location: string | undefined): boolean {
@@ -104,7 +104,7 @@ async function runSource(
     for (const job of newJobs) {
       try {
         const scoring = await scoreJob(job);
-        if (scoring.score < 50) {
+        if (scoring.score < 40) {
           logger.debug({ ...tag, title: job.title, score: scoring.score }, 'dropped by score');
           continue;
         }

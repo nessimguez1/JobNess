@@ -188,4 +188,72 @@ export const CAREER_PAGES: CareerPageTarget[] = [
   { company: 'ZoomInfo',       slug: 'zoominfo',       ats: 'greenhouse', website: 'https://zoominfo.com' },
   { company: 'Demandbase',     slug: 'demandbase',     ats: 'greenhouse', website: 'https://demandbase.com' },
   { company: 'Crossbeam',      slug: 'crossbeam',      ats: 'greenhouse', website: 'https://crossbeam.com' },
+
+  // ── Israeli VC / PE ──────────────────────────────────────────────────────
+  { company: 'OurCrowd',       slug: 'ourcrowd',       ats: 'greenhouse', website: 'https://ourcrowd.com' },
+  { company: 'Team8',          slug: 'team8',          ats: 'greenhouse', website: 'https://team8.vc' },
+  { company: '83North',        slug: '83north',        ats: 'greenhouse', website: 'https://83north.com' },
+  { company: 'Target Global',  slug: 'targetglobal',   ats: 'greenhouse', website: 'https://target.global' },
+  { company: 'TLV Partners',   slug: 'tlvpartners',    ats: 'greenhouse', website: 'https://tlv.partners' },
+  { company: 'Pitango',        slug: 'pitango',        ats: 'greenhouse', website: 'https://pitango.com' },
+  { company: 'Viola Ventures', slug: 'violaventures',  ats: 'greenhouse', website: 'https://viola-group.com' },
+
+  // ── Global VC / Growth Equity ────────────────────────────────────────────
+  { company: 'Sequoia Capital', slug: 'sequoiacap',    ats: 'greenhouse', website: 'https://sequoiacap.com' },
+  { company: 'Index Ventures',  slug: 'indexventures', ats: 'greenhouse', website: 'https://indexventures.com' },
+  { company: 'Balderton Capital', slug: 'baldertoncapital', ats: 'greenhouse', website: 'https://balderton.com' },
+  { company: 'General Atlantic', slug: 'generalatlantic', ats: 'greenhouse', website: 'https://generalatlantic.com' },
+  { company: 'Atomico',         slug: 'atomico',       ats: 'greenhouse', website: 'https://atomico.com' },
+  { company: 'Northzone',       slug: 'northzone',     ats: 'greenhouse', website: 'https://northzone.com' },
+  { company: 'Headline',        slug: 'headline',      ats: 'greenhouse', website: 'https://headline.com' },
+  { company: 'Accel',           slug: 'accel',         ats: 'greenhouse', website: 'https://accel.com' },
+
+  // ── Israeli Fintech & WealthTech (additions) ─────────────────────────────
+  { company: 'Pontera',        slug: 'pontera',        ats: 'greenhouse', website: 'https://pontera.com' },
+  { company: 'Capitolis',      slug: 'capitolis',      ats: 'greenhouse', website: 'https://capitolis.com' },
+  { company: 'Forter',         slug: 'forter',         ats: 'greenhouse', website: 'https://forter.com' },
+  { company: 'Verbit',         slug: 'verbit',         ats: 'greenhouse', website: 'https://verbit.ai' },
+  { company: 'EverC',          slug: 'everc',          ats: 'greenhouse', website: 'https://everc.com' },
+  { company: 'Cellebrite',     slug: 'cellebrite',     ats: 'greenhouse', website: 'https://cellebrite.com' },
+  { company: 'EasySend',       slug: 'easysend',       ats: 'greenhouse', website: 'https://easysend.io' },
+  { company: 'Frontegg',       slug: 'frontegg',       ats: 'greenhouse', website: 'https://frontegg.com' },
+  { company: 'BigPanda',       slug: 'bigpanda',       ats: 'greenhouse', website: 'https://bigpanda.io' },
+  { company: 'Armis',          slug: 'armis',          ats: 'greenhouse', website: 'https://armis.com' },
+  { company: 'Varonis',        slug: 'varonis',        ats: 'greenhouse', website: 'https://varonis.com' },
+  { company: 'Cato Networks',  slug: 'catonetworks',   ats: 'greenhouse', website: 'https://catonetworks.com' },
+  { company: 'SentinelOne',    slug: 'sentinelone',    ats: 'greenhouse', website: 'https://sentinelone.com' },
+
+  // ── Global Fintech (additions) ───────────────────────────────────────────
+  { company: 'Adyen',          slug: 'adyen',          ats: 'greenhouse', website: 'https://adyen.com' },
+  { company: 'Ramp',           slug: 'ramp',           ats: 'greenhouse', website: 'https://ramp.com' },
+  { company: 'Mercury',        slug: 'mercury',        ats: 'greenhouse', website: 'https://mercury.com' },
+  { company: 'BILL',           slug: 'billcom',        ats: 'greenhouse', website: 'https://bill.com' },
+  { company: 'Modern Treasury', slug: 'moderntreasury', ats: 'greenhouse', website: 'https://moderntreasury.com' },
+  { company: 'Taxbit',         slug: 'taxbit',         ats: 'greenhouse', website: 'https://taxbit.com' },
+  { company: 'Zero Hash',      slug: 'zerohash',       ats: 'greenhouse', website: 'https://zerohash.com' },
+  { company: 'Unit',           slug: 'unit',           ats: 'greenhouse', website: 'https://unit.co' },
+  { company: 'Paysafe',        slug: 'paysafe',        ats: 'greenhouse', website: 'https://paysafe.com' },
+  { company: 'Capchase',       slug: 'capchase',       ats: 'greenhouse', website: 'https://capchase.com' },
+  { company: 'Synctera',       slug: 'synctera',       ats: 'greenhouse', website: 'https://synctera.com' },
+  { company: 'Treasury Prime', slug: 'treasuryprime',  ats: 'greenhouse', website: 'https://treasuryprime.com' },
+  { company: 'Parafin',        slug: 'parafin',        ats: 'greenhouse', website: 'https://parafin.com' },
+
+  // ── WealthTech (additions) ───────────────────────────────────────────────
+  { company: 'Altruist',       slug: 'altruist',       ats: 'greenhouse', website: 'https://altruist.com' },
+  { company: 'Enfusion',       slug: 'enfusion',       ats: 'greenhouse', website: 'https://enfusion.com' },
+  { company: 'Arcesium',       slug: 'arcesium',       ats: 'greenhouse', website: 'https://arcesium.com' },
+  { company: 'Atomic Financial', slug: 'atomicfinancial', ats: 'greenhouse', website: 'https://atomicfi.com' },
+  { company: 'YieldX',         slug: 'yieldx',         ats: 'greenhouse', website: 'https://yieldx.app' },
+  { company: 'Simon Markets',  slug: 'simon-markets',  ats: 'greenhouse', website: 'https://simonmarkets.com' },
+
+  // ── European FinTech (additions) ─────────────────────────────────────────
+  { company: 'Trade Republic', slug: 'traderepublic',  ats: 'greenhouse', website: 'https://traderepublic.com' },
+  { company: 'Scalable Capital', slug: 'scalablecapital', ats: 'greenhouse', website: 'https://scalable.capital' },
+  { company: 'Taxfix',         slug: 'taxfix',         ats: 'greenhouse', website: 'https://taxfix.de' },
+  { company: 'Younited',       slug: 'younited',       ats: 'greenhouse', website: 'https://younited-credit.com' },
+  { company: 'Luko',           slug: 'luko',           ats: 'greenhouse', website: 'https://luko.eu' },
+  { company: 'Contentsquare',  slug: 'contentsquare',  ats: 'greenhouse', website: 'https://contentsquare.com' },
+  { company: 'Dataiku',        slug: 'dataiku',        ats: 'greenhouse', website: 'https://dataiku.com' },
+  { company: 'Mirakl',         slug: 'mirakl',         ats: 'greenhouse', website: 'https://mirakl.com' },
+  { company: 'October',        slug: 'october',        ats: 'lever',      website: 'https://october.eu' },
 ];
