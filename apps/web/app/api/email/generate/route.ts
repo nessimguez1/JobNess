@@ -70,6 +70,18 @@ ${NESSIM}
 
 Return ONLY the email body. No subject line. No markdown.`;
 
+const SUBJECT_SYSTEM = `You are writing an email subject line for Nessim Guez.
+
+Given the job title, company, and email type, write ONE subject line only. No quotes, no markdown, no explanation.
+
+For cold emails: hook on the company's specific market/product angle. Max 10 words.
+  Example: "SimilarWeb's French-speaking enterprise push — Nessim Guez"
+
+For warm emails: reference what the recipient wrote or did, in brackets. Max 12 words.
+  Example: "[Your post on private wealth distribution] — Nessim Guez"
+
+Return only the subject line text. Nothing else.`;
+
 const LINKEDIN_SYSTEM = `You are writing a LinkedIn DM on behalf of Nessim Guez.
 
 CRITICAL: Write in FIRST PERSON ("I", "my"). NEVER third person.
@@ -99,14 +111,20 @@ const SYSTEM: Record<EmailType, string> = {
 function buildUserMessage(body: {
   title: string; company: string; fit_note?: string;
   match_bullets?: string[]; context?: string; type: EmailType;
+  description?: string; company_site?: string;
 }): string {
   const lines = [
     'JOB:',
     `Title: ${body.title}`,
     `Company: ${body.company}`,
+    ...(body.company_site ? [`Company site: ${body.company_site}`] : []),
     `Fit note: ${body.fit_note ?? 'n/a'}`,
     `Match points: ${(body.match_bullets ?? []).join(' | ')}`,
   ];
+  if (body.description?.trim()) {
+    const snippet = body.description.trim().slice(0, 800);
+    lines.push('', 'JOB DESCRIPTION (excerpt):', snippet);
+  }
   if (body.context?.trim()) {
     const label = body.type === 'warm' ? 'WHAT THE RECIPIENT WROTE / DID' : 'ADDITIONAL CONTEXT';
     lines.push('', `${label}:`, body.context.trim());
@@ -127,10 +145,12 @@ function openai() {
   return _openai;
 }
 
-async function generate(system: string, userMsg: string): Promise<string> {
+const TEMPERATURE: Record<EmailType, number> = { cold: 0.35, warm: 0.65, linkedin: 0.65 };
+
+async function generate(system: string, userMsg: string, type: EmailType): Promise<string> {
   const params = {
-    max_tokens: 500,
-    temperature: 0.5,
+    max_tokens: 600,
+    temperature: TEMPERATURE[type],
     messages: [
       { role: 'system' as const, content: system },
       { role: 'user'   as const, content: userMsg },
@@ -143,7 +163,6 @@ async function generate(system: string, userMsg: string): Promise<string> {
     if (!text) throw new Error('empty openai response');
     return text;
   } catch {
-    // Groq as fallback
     const res = await groq().chat.completions.create({ ...params, model: 'llama-3.3-70b-versatile' });
     const text = res.choices[0]?.message.content?.trim() ?? '';
     if (!text) throw new Error('empty groq response');
@@ -161,9 +180,10 @@ export async function POST(req: NextRequest) {
   const payload = await req.json() as {
     type?: EmailType; title?: string; company?: string;
     fit_note?: string; match_bullets?: string[]; context?: string;
+    description?: string; company_site?: string;
   };
 
-  const { type, title, company, fit_note, match_bullets, context } = payload;
+  const { type, title, company, fit_note, match_bullets, context, description, company_site } = payload;
   if (!type || !title || !company) {
     return NextResponse.json({ error: 'type, title, and company are required' }, { status: 400 });
   }
@@ -182,8 +202,21 @@ export async function POST(req: NextRequest) {
     if (fit_note)      msg.fit_note      = fit_note;
     if (match_bullets) msg.match_bullets = match_bullets;
     if (context)       msg.context       = context;
-    const body = await generate(SYSTEM[type], buildUserMessage(msg));
-    return NextResponse.json({ body });
+    if (description)   msg.description   = description;
+    if (company_site)  msg.company_site  = company_site;
+
+    const userMsg = buildUserMessage(msg);
+    const [body, subject] = await Promise.all([
+      generate(SYSTEM[type], userMsg, type),
+      type !== 'linkedin'
+        ? generate(
+            SUBJECT_SYSTEM,
+            `Type: ${type}\nJob: ${title} at ${company}\n${context ? `Context: ${context}` : ''}`,
+            type,
+          )
+        : Promise.resolve(''),
+    ]);
+    return NextResponse.json({ body, subject });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

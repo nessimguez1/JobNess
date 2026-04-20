@@ -42,7 +42,7 @@ export default function JobDetailModal({ job, onClose, onDraftEmail, onMove, onT
           <div className="flex items-center gap-2">
             <div className={`px-2.5 py-1 rounded-md border num font-semibold ${tone.bg} ${tone.border}`}>
               <span className={`text-[14px] ${tone.text}`}>{job.score}</span>
-              <span className="t-dim text-[11px]">/100</span>
+              <span className="t-dim text-[12px]">/100</span>
             </div>
             <button onClick={onClose} className="btn-ghost p-1.5 rounded"><X size={16} /></button>
           </div>
@@ -51,14 +51,14 @@ export default function JobDetailModal({ job, onClose, onDraftEmail, onMove, onT
         <div className="overflow-y-auto scroll-thin p-5 space-y-5">
           {job.fit_note && (
             <div>
-              <div className="t-dim num text-[10px] uppercase tracking-wider mb-2 font-semibold">Why it fits</div>
+              <div className="t-dim num text-[12px] uppercase tracking-wider mb-2 font-semibold">Why it fits</div>
               <div className="t-ink text-[14px] leading-relaxed">{job.fit_note}</div>
             </div>
           )}
 
           {bullets.length > 0 && (
             <div>
-              <div className="t-dim num text-[10px] uppercase tracking-wider mb-2 font-semibold">Match points</div>
+              <div className="t-dim num text-[12px] uppercase tracking-wider mb-2 font-semibold">Match points</div>
               <ul className="space-y-1.5">
                 {bullets.map((b, i) => (
                   <li key={i} className="t-ink text-[13px] flex items-start gap-2">
@@ -71,7 +71,7 @@ export default function JobDetailModal({ job, onClose, onDraftEmail, onMove, onT
 
           {job.description && (
             <div>
-              <div className="t-dim num text-[10px] uppercase tracking-wider mb-2 font-semibold">Description</div>
+              <div className="t-dim num text-[12px] uppercase tracking-wider mb-2 font-semibold">Description</div>
               <p className="t-ink text-[13px] leading-relaxed">{job.description}</p>
             </div>
           )}

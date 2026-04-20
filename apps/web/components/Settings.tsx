@@ -92,7 +92,7 @@ export default function Settings() {
                 onMouseUp={e => savePatch({ min_salary_nis: parseInt((e.target as HTMLInputElement).value) })}
                 onTouchEnd={e => savePatch({ min_salary_nis: parseInt((e.target as HTMLInputElement).value) })}
                 className="w-full" />
-              <div className="flex justify-between text-[10px] num t-dim mt-1">
+              <div className="flex justify-between text-[12px] num t-dim mt-1">
                 <span>10K</span><span>30K</span><span>50K</span>
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function Settings() {
               <div className="flex flex-wrap gap-2">
                 {['Private Banking', 'Fintech BD', 'VC / IR', 'Tech BD'].map(r => (
                   <button key={r} onClick={() => toggleRole(r)}
-                    className={`px-3 py-1.5 rounded-md border text-[11px] num font-medium transition-colors ${settings.role_focus.includes(r) ? 'bg-ink t-paper' : 'bg-card t-muted b-line hover:bg-soft'}`}
+                    className={`px-3 py-1.5 rounded-md border text-[12px] num font-medium transition-colors ${settings.role_focus.includes(r) ? 'bg-ink t-paper' : 'bg-card t-muted b-line hover:bg-soft'}`}
                     style={{ borderColor: settings.role_focus.includes(r) ? '#1a1815' : '' }}>
                     {r}
                   </button>
@@ -113,7 +113,7 @@ export default function Settings() {
               <div className="flex flex-wrap gap-2">
                 {['Israel', 'Remote EU', 'Remote US', 'Switzerland'].map(g => (
                   <button key={g} onClick={() => toggleGeo(g)}
-                    className={`px-3 py-1.5 rounded-md border text-[11px] num font-medium transition-colors ${settings.geo.includes(g) ? 'bg-ink t-paper' : 'bg-card t-muted b-line hover:bg-soft'}`}
+                    className={`px-3 py-1.5 rounded-md border text-[12px] num font-medium transition-colors ${settings.geo.includes(g) ? 'bg-ink t-paper' : 'bg-card t-muted b-line hover:bg-soft'}`}
                     style={{ borderColor: settings.geo.includes(g) ? '#1a1815' : '' }}>
                     {g}
                   </button>
@@ -127,11 +127,11 @@ export default function Settings() {
           <div className="flex items-center gap-2 mb-4">
             <Shield size={14} className="t-brick" />
             <div className="t-ink text-[14px] font-semibold">Discretion blocklist</div>
-            <div className="t-dim text-[11px] num ml-auto">these never appear in feed</div>
+            <div className="t-dim text-[12px] num ml-auto">these never appear in feed</div>
           </div>
           <div className="flex flex-wrap gap-2 mb-3">
             {blocklist.map(b => (
-              <div key={b.id} className="flex items-center gap-1.5 px-2.5 py-1 bg-brick-soft border b-brick-soft rounded-md t-brick text-[11px] num font-medium">
+              <div key={b.id} className="flex items-center gap-1.5 px-2.5 py-1 bg-brick-soft border b-brick-soft rounded-md t-brick text-[12px] num font-medium">
                 <span>{b.pattern}</span>
                 <button onClick={() => removeBlock(b.id)} className="hover:opacity-70"><X size={10} /></button>
               </div>
@@ -158,10 +158,10 @@ export default function Settings() {
               </div>
               <div>
                 <div className="t-ink text-[13px] num font-medium">CV_Nessim_Guez.pdf</div>
-                <div className="t-dim text-[11px] num">attached to every outgoing draft</div>
+                <div className="t-dim text-[12px] num">attached to every outgoing draft</div>
               </div>
             </div>
-            <button className="t-ink text-[11px] num font-semibold hover:underline">Replace</button>
+            <button className="t-ink text-[12px] num font-semibold hover:underline">Replace</button>
           </div>
         </div>
 
@@ -182,11 +182,11 @@ export default function Settings() {
                   <div className="w-1.5 h-1.5 rounded-full pulse-dot" style={{ backgroundColor: '#3f5c2e' }} />
                   <span className="t-ink">{s.name}</span>
                 </div>
-                <div className="t-dim num text-[11px]">{s.detail}</div>
+                <div className="t-dim num text-[12px]">{s.detail}</div>
               </div>
             ))}
           </div>
-          <div className="mt-3 text-[11px] t-dim num">Refresh cadence: twice daily (morning + evening)</div>
+          <div className="mt-3 text-[12px] t-dim num">Refresh cadence: twice daily (morning + evening)</div>
         </div>
       </div>
     </div>

@@ -91,7 +91,7 @@ export default function Stats() {
             { label: 'Avg Score', value: avgScore !== null ? avgScore : '—' },
           ].map(m => (
             <div key={m.label} className="bg-card border b-line rounded-lg p-4">
-              <div className="t-dim num text-[10px] uppercase tracking-wider mb-2 font-semibold">{m.label}</div>
+              <div className="t-dim num text-[12px] uppercase tracking-wider mb-2 font-semibold">{m.label}</div>
               <div className="num t-ink text-[34px] leading-none font-semibold">{m.value}</div>
             </div>
           ))}
@@ -99,7 +99,7 @@ export default function Stats() {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-card border b-line rounded-lg p-5">
-            <div className="t-dim num text-[10px] uppercase tracking-wider mb-4 font-semibold">By Source</div>
+            <div className="t-dim num text-[12px] uppercase tracking-wider mb-4 font-semibold">By Source</div>
             {Object.keys(bySource).length === 0 ? (
               <div className="t-dim text-[12px] num italic">No data yet</div>
             ) : (
@@ -122,7 +122,7 @@ export default function Stats() {
           </div>
 
           <div className="bg-card border b-line rounded-lg p-5">
-            <div className="t-dim num text-[10px] uppercase tracking-wider mb-4 font-semibold">By Role Type</div>
+            <div className="t-dim num text-[12px] uppercase tracking-wider mb-4 font-semibold">By Role Type</div>
             {Object.keys(byType).length === 0 ? (
               <div className="t-dim text-[12px] num italic">No data yet</div>
             ) : (
@@ -144,7 +144,7 @@ export default function Stats() {
         </div>
 
         <div className="bg-card border b-line rounded-lg p-5">
-          <div className="t-dim num text-[10px] uppercase tracking-wider mb-4 font-semibold">Last 14 days — jobs scraped</div>
+          <div className="t-dim num text-[12px] uppercase tracking-wider mb-4 font-semibold">Last 14 days — jobs scraped</div>
           {jobs.length === 0 ? (
             <div className="t-dim text-[12px] num italic py-8 text-center">Run a scrape to see activity</div>
           ) : (
@@ -154,7 +154,7 @@ export default function Stats() {
                   <div key={i} className="flex-1 bg-ink rounded-t" style={{ height: `${Math.max((v / maxActivity) * 100, 3)}%`, opacity: 0.3 + (i / 14) * 0.7 }} />
                 ))}
               </div>
-              <div className="flex justify-between text-[10px] num t-dim mt-2">
+              <div className="flex justify-between text-[12px] num t-dim mt-2">
                 <span>14d ago</span><span>today</span>
               </div>
             </>

@@ -62,7 +62,7 @@ export default function Terminal() {
               <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
             </button>
             <div className="w-px h-6 bg-softer" />
-            <div className="text-[11px] num t-muted flex items-center gap-1.5">
+            <div className="text-[12px] num t-muted flex items-center gap-1.5">
               <Lock size={11} /> Nessim G.
             </div>
           </div>

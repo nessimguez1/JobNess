@@ -48,7 +48,7 @@ function TargetEmailModal({ target, onClose }: { target: TargetRow; onClose: () 
               <Target size={14} className="t-ink" />
             </div>
             <div>
-              <div className="t-dim num text-[10px] uppercase tracking-wider font-semibold">Speculative outreach</div>
+              <div className="t-dim num text-[12px] uppercase tracking-wider font-semibold">Speculative outreach</div>
               <div className="t-ink text-[14px] font-medium">{target.name}</div>
             </div>
           </div>
@@ -57,14 +57,14 @@ function TargetEmailModal({ target, onClose }: { target: TargetRow; onClose: () 
 
         <div className="p-4 space-y-3 overflow-y-auto scroll-thin">
           <div>
-            <div className="t-dim num text-[10px] uppercase tracking-wider mb-1.5 font-semibold">Subject</div>
+            <div className="t-dim num text-[12px] uppercase tracking-wider mb-1.5 font-semibold">Subject</div>
             <input value={subject} onChange={e => setSubject(e.target.value)} className="w-full bg-paper border b-line rounded-md px-3 py-2 text-[13px]" />
           </div>
           <div>
-            <div className="t-dim num text-[10px] uppercase tracking-wider mb-1.5 font-semibold">Body</div>
+            <div className="t-dim num text-[12px] uppercase tracking-wider mb-1.5 font-semibold">Body</div>
             <textarea value={body} onChange={e => setBody(e.target.value)} rows={14} className="w-full bg-paper border b-line rounded-md px-3 py-2 text-[13px] leading-relaxed resize-none" />
           </div>
-          <div className="flex items-start gap-2 p-2.5 bg-steel-soft border b-steel-soft rounded-md text-[11px] t-steel">
+          <div className="flex items-start gap-2 p-2.5 bg-steel-soft border b-steel-soft rounded-md text-[12px] t-steel">
             <AlertCircle size={13} className="mt-0.5 shrink-0" />
             <div>Attach <span className="num font-semibold">CV_Nessim_Guez.pdf</span> in Gmail. Destination: check {target.name}&apos;s website or LinkedIn.</div>
           </div>
@@ -95,14 +95,14 @@ function TargetCard({ target, onDraft, onRemove }: {
           </div>
           <div className="min-w-0">
             <div className="t-ink text-[16px] leading-tight font-semibold">{target.name}</div>
-            <div className="t-muted text-[11px] num flex items-center gap-1.5 mt-0.5">
+            <div className="t-muted text-[12px] num flex items-center gap-1.5 mt-0.5">
               {target.type && <span>{target.type}</span>}
               {target.type && target.location && <span>·</span>}
               {target.location && <span>{target.location}</span>}
             </div>
           </div>
         </div>
-        <div className={`${isHigh ? 'bg-amber-soft t-amber' : 'bg-soft t-muted'} text-[10px] num uppercase tracking-wider flex items-center gap-1 px-2 py-1 rounded font-semibold`}>
+        <div className={`${isHigh ? 'bg-amber-soft t-amber' : 'bg-soft t-muted'} text-[12px] num uppercase tracking-wider flex items-center gap-1 px-2 py-1 rounded font-semibold`}>
           <Star size={10} fill="currentColor" /> {target.priority}
         </div>
       </div>
@@ -117,7 +117,7 @@ function TargetCard({ target, onDraft, onRemove }: {
           {target.linkedin && <a href={target.linkedin} target="_blank" rel="noreferrer" className="btn-ghost p-1.5 rounded" title="LinkedIn"><Linkedin size={12} /></a>}
           <button onClick={() => onRemove(target.id)} className="btn-ghost btn-ghost-brick p-1.5 rounded" title="Remove"><X size={12} /></button>
         </div>
-        <button onClick={() => onDraft(target)} className="btn-primary px-3 py-1.5 rounded-md text-[11px] num font-medium flex items-center gap-1.5">
+        <button onClick={() => onDraft(target)} className="btn-primary px-3 py-1.5 rounded-md text-[12px] num font-medium flex items-center gap-1.5">
           <Edit3 size={11} /> Draft email
         </button>
       </div>
@@ -193,7 +193,7 @@ export default function Targets() {
         <div className="space-y-6">
           {high.length > 0 && (
             <div>
-              <div className="t-dim num text-[10px] uppercase tracking-wider mb-3 font-semibold">High priority</div>
+              <div className="t-dim num text-[12px] uppercase tracking-wider mb-3 font-semibold">High priority</div>
               <div className="grid grid-cols-2 gap-3">
                 {high.map(t => <TargetCard key={t.id} target={t} onDraft={setEmailTarget} onRemove={removeTarget} />)}
               </div>
@@ -201,7 +201,7 @@ export default function Targets() {
           )}
           {rest.length > 0 && (
             <div>
-              {high.length > 0 && <div className="t-dim num text-[10px] uppercase tracking-wider mb-3 font-semibold">Other</div>}
+              {high.length > 0 && <div className="t-dim num text-[12px] uppercase tracking-wider mb-3 font-semibold">Other</div>}
               <div className="grid grid-cols-2 gap-3">
                 {rest.map(t => <TargetCard key={t.id} target={t} onDraft={setEmailTarget} onRemove={removeTarget} />)}
               </div>

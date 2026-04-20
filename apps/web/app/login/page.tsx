@@ -46,7 +46,7 @@ export default function LoginPage() {
 
         <form onSubmit={submit} className="space-y-3">
           <div>
-            <div className="t-dim num text-[10px] uppercase tracking-wider mb-1.5 font-semibold">Password</div>
+            <div className="t-dim num text-[12px] uppercase tracking-wider mb-1.5 font-semibold">Password</div>
             <input
               type="password"
               value={password}

@@ -12,6 +12,7 @@ function Column({
   title,
   icon,
   jobs,
+  emptyMessage,
   onMove,
   onOpen,
   onTrash,
@@ -20,6 +21,7 @@ function Column({
   title: string;
   icon: React.ReactNode;
   jobs: Job[];
+  emptyMessage: string;
   onMove: (id: string, col: Job['column_name']) => void;
   onOpen: (job: Job) => void;
   onTrash: (id: string) => void;
@@ -32,11 +34,11 @@ function Column({
           <span className="t-muted">{icon}</span>
           <span className="t-ink text-[13px] font-semibold">{title}</span>
         </div>
-        <span className="t-dim num text-[11px] bg-card px-1.5 rounded border b-line">{jobs.length}</span>
+        <span className="t-dim num text-[12px] bg-card px-1.5 rounded border b-line">{jobs.length}</span>
       </div>
       <div className="flex-1 overflow-y-auto scroll-thin p-2 space-y-2" style={{ maxHeight: 'calc(100vh - 220px)' }}>
         {jobs.length === 0 ? (
-          <div className="text-center py-12 t-dim text-[11px] num italic">empty</div>
+          <div className="text-center py-12 t-dim text-[12px] num">{emptyMessage}</div>
         ) : (
           jobs.map(j => (
             <JobCard key={j.id} job={j} onMove={onMove} onOpen={onOpen} onTrash={onTrash} onDraftEmail={onDraftEmail} />
@@ -100,17 +102,43 @@ export default function Feed() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 t-dim text-[12px] num">loading jobs…</div>
+      <div className="flex gap-3 overflow-x-auto scroll-thin pb-2">
+        {['Inbox', 'Interested', 'Applied', 'Archive'].map(col => (
+          <div key={col} className="flex flex-col bg-soft border b-line rounded-lg min-w-[310px] w-[310px]">
+            <div className="flex items-center justify-between px-3 py-2.5 border-b b-line">
+              <div className="h-4 w-20 bg-card rounded animate-pulse" />
+              <div className="h-4 w-6 bg-card rounded animate-pulse" />
+            </div>
+            <div className="p-2 space-y-2">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="bg-card border b-line rounded-lg p-3 space-y-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-md bg-soft animate-pulse shrink-0" />
+                    <div className="space-y-1.5 flex-1">
+                      <div className="h-3 bg-soft rounded animate-pulse w-3/4" />
+                      <div className="h-2.5 bg-soft rounded animate-pulse w-1/2" />
+                    </div>
+                    <div className="h-5 w-8 bg-soft rounded animate-pulse" />
+                  </div>
+                  <div className="h-3.5 bg-soft rounded animate-pulse w-full" />
+                  <div className="h-3 bg-soft rounded animate-pulse w-5/6" />
+                  <div className="h-8 bg-soft rounded animate-pulse w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
     );
   }
 
   return (
     <>
       <div className="flex gap-3 overflow-x-auto scroll-thin pb-2">
-        <Column title="Inbox"     icon={<Inbox   size={13} />} jobs={byCol('inbox')}     onMove={moveJob} onOpen={setSelectedJob} onTrash={trashJob} onDraftEmail={setEmailJob} />
-        <Column title="Interested" icon={<Heart   size={13} />} jobs={byCol('interested')} onMove={moveJob} onOpen={setSelectedJob} onTrash={trashJob} onDraftEmail={setEmailJob} />
-        <Column title="Applied"   icon={<Send    size={13} />} jobs={byCol('applied')}   onMove={moveJob} onOpen={setSelectedJob} onTrash={trashJob} onDraftEmail={setEmailJob} />
-        <Column title="Archive"   icon={<Archive size={13} />} jobs={byCol('archive')}   onMove={moveJob} onOpen={setSelectedJob} onTrash={trashJob} onDraftEmail={setEmailJob} />
+        <Column title="Inbox"      icon={<Inbox   size={13} />} jobs={byCol('inbox')}      emptyMessage="No new matches yet. Scraper runs twice daily." onMove={moveJob} onOpen={setSelectedJob} onTrash={trashJob} onDraftEmail={setEmailJob} />
+        <Column title="Interested" icon={<Heart   size={13} />} jobs={byCol('interested')} emptyMessage="Heart a job from Inbox to track it here."             onMove={moveJob} onOpen={setSelectedJob} onTrash={trashJob} onDraftEmail={setEmailJob} />
+        <Column title="Applied"    icon={<Send    size={13} />} jobs={byCol('applied')}    emptyMessage="Mark a job Applied after you send your email."         onMove={moveJob} onOpen={setSelectedJob} onTrash={trashJob} onDraftEmail={setEmailJob} />
+        <Column title="Archive"    icon={<Archive size={13} />} jobs={byCol('archive')}    emptyMessage="Passed or rejected jobs land here."                    onMove={moveJob} onOpen={setSelectedJob} onTrash={trashJob} onDraftEmail={setEmailJob} />
       </div>
 
       {selectedJob && !emailJob && (

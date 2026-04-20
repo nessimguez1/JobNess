@@ -34,18 +34,18 @@ export default function JobCard({ job, onMove, onOpen, onTrash, onDraftEmail }: 
       <div className="flex items-start justify-between gap-2 mb-2.5">
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-8 h-8 rounded-md bg-soft border b-line flex items-center justify-center shrink-0">
-            <span className="text-[10px] t-ink font-semibold num">{job.mono ?? job.company.slice(0, 2).toUpperCase()}</span>
+            <span className="text-[12px] t-ink font-semibold num">{job.mono ?? job.company.slice(0, 2).toUpperCase()}</span>
           </div>
           <div className="min-w-0">
             <div className="t-ink text-[13px] font-medium truncate">{job.company}</div>
-            <div className="t-dim text-[10px] num flex items-center gap-1">
+            <div className="t-dim text-[12px] num flex items-center gap-1">
               <SourceIcon source={job.source} size={10} />
               <span>{job.source}</span>
               {postedDays !== undefined && <><span>·</span><span>{formatRelative(postedDays)}</span></>}
             </div>
           </div>
         </div>
-        <div className={`px-1.5 py-0.5 rounded-md border text-[11px] num font-semibold shrink-0 ${tone.bg} ${tone.border}`}>
+        <div className={`px-1.5 py-0.5 rounded-md border text-[12px] num font-semibold shrink-0 ${tone.bg} ${tone.border}`}>
           <span className={tone.text}>{job.score}</span>
         </div>
       </div>
@@ -53,13 +53,13 @@ export default function JobCard({ job, onMove, onOpen, onTrash, onDraftEmail }: 
       <div className="text-[14px] leading-snug t-ink font-medium mb-1.5">{job.title}</div>
 
       {job.location && (
-        <div className="flex items-center gap-1.5 text-[11px] t-muted mb-1.5 num">
+        <div className="flex items-center gap-1.5 text-[12px] t-muted mb-1.5 num">
           <MapPin size={10} /><span className="truncate">{job.location}</span>
         </div>
       )}
 
       {job.salary_text && (
-        <div className="text-[11px] t-amber num mb-2.5 font-semibold">{job.salary_text}</div>
+        <div className="text-[12px] t-amber num mb-2.5 font-semibold">{job.salary_text}</div>
       )}
 
       {!isArchived && job.fit_note && (
@@ -67,7 +67,7 @@ export default function JobCard({ job, onMove, onOpen, onTrash, onDraftEmail }: 
       )}
 
       {isApplied && job.applied_at && (
-        <div className="text-[11px] t-forest num mb-2 flex items-center gap-1">
+        <div className="text-[12px] t-forest num mb-2 flex items-center gap-1">
           <Check size={10} /> applied {formatRelative(appliedDays)}
         </div>
       )}
