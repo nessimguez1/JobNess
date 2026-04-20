@@ -8,14 +8,15 @@ import { scoreJob } from './scorer.js';
 import { parseSalaryNIS } from './utils/fx.js';
 import { logger } from './utils/logger.js';
 
+let _supabase: ReturnType<typeof createClient> | null = null;
 function getSupabase() {
+  if (_supabase) return _supabase;
   const url = process.env['SUPABASE_URL'];
   const key = process.env['SUPABASE_SERVICE_ROLE_KEY'];
   if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
-  return createClient(url, key);
+  _supabase = createClient(url, key);
+  return _supabase;
 }
-
-const supabase = getSupabase();
 
 function isBlocked(company: string, patterns: string[]): boolean {
   const lower = company.toLowerCase();
@@ -32,8 +33,9 @@ async function runSource(
   blocklistPatterns: string[],
   minSalaryNIS: number,
 ): Promise<void> {
-  const { data: runRow, error: runErr } = await supabase
-    .from('scrape_runs')
+  const supabase = getSupabase();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: runRow, error: runErr } = await (supabase.from('scrape_runs') as any)
     .insert({ source: sourceName, status: 'running' })
     .select('id')
     .single();
@@ -94,7 +96,8 @@ async function runSource(
           fit_note: scoring.fit_note,
           match_bullets: scoring.match_bullets,
         });
-        const { error: insertErr } = await supabase.from('jobs').insert(row);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: insertErr } = await supabase.from('jobs').insert(row as any);
         if (insertErr) throw insertErr;
         inserted++;
         logger.info({ ...tag, title: job.title, score: scoring.score }, 'inserted');
@@ -103,25 +106,16 @@ async function runSource(
       }
     }
 
-    await supabase
-      .from('scrape_runs')
-      .update({
-        status: 'ok',
-        completed_at: new Date().toISOString(),
-        jobs_found: scraped.length,
-        jobs_new: inserted,
-      })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from('scrape_runs') as any)
+      .update({ status: 'ok', completed_at: new Date().toISOString(), jobs_found: scraped.length, jobs_new: inserted })
       .eq('id', runId);
 
     logger.info({ ...tag, inserted }, 'source complete');
   } catch (err) {
-    await supabase
-      .from('scrape_runs')
-      .update({
-        status: 'failed',
-        completed_at: new Date().toISOString(),
-        error: String(err),
-      })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from('scrape_runs') as any)
+      .update({ status: 'failed', completed_at: new Date().toISOString(), error: String(err) })
       .eq('id', runId);
     logger.error({ ...tag, err }, 'source failed');
   }
@@ -130,9 +124,10 @@ async function runSource(
 export async function runAllScrapers(): Promise<void> {
   logger.info('scrape run started');
 
+  const db = getSupabase();
   const [{ data: bl }, { data: settings }] = await Promise.all([
-    supabase.from('blocklist').select('pattern'),
-    supabase.from('settings').select('min_salary_nis').eq('id', 1).single(),
+    db.from('blocklist').select('pattern'),
+    db.from('settings').select('min_salary_nis').eq('id', 1).single(),
   ]);
 
   const patterns = ((bl ?? []) as { pattern: string }[]).map(r => r.pattern);
@@ -143,6 +138,7 @@ export async function runAllScrapers(): Promise<void> {
   await runSource('CareerPage', runCareerPages, patterns, minSalary);
   await runSource('Drushim', runDrushim, patterns, minSalary);
 
-  await supabase.from('settings').update({ last_sync_at: new Date().toISOString() }).eq('id', 1);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (getSupabase().from('settings') as any).update({ last_sync_at: new Date().toISOString() }).eq('id', 1);
   logger.info('scrape run complete');
 }
