@@ -6,50 +6,103 @@ import type { Job } from '@jobness/shared';
 
 type EmailTab = 'cold' | 'warm' | 'linkedin';
 
-function genEmails(job: Job) {
-  const bullets = Array.isArray(job.match_bullets) ? job.match_bullets : [];
-  const matchLines = bullets.map(b => `• ${b}`).join('\n');
-  const cold = {
-    subject: `Application — ${job.title} — Nessim Guez`,
-    body: `Dear Hiring Team,
+function genEmails(job: Job, lang: 'EN' | 'FR') {
+  const bullets = Array.isArray(job.match_bullets) ? job.match_bullets.slice(0, 3) : [];
+  const bulletLines = bullets.map(b => `• ${b}`).join('\n');
+  const topBullet = bullets[0] ?? 'strong profile alignment';
 
-I'm writing to apply for the ${job.title} role at ${job.company}. My profile maps cleanly to what the position requires:
+  if (lang === 'FR') {
+    const cold = {
+      subject: `${job.title} – Nessim Guez, Tel Aviv`,
+      body: `Bonjour [Prénom],
 
-${matchLines}
+Je suis Relationship Manager chez UBP à Tel Aviv, où je gère une clientèle HNWI francophone entre Israël et la France. J'ai vu le poste de ${job.title} chez ${job.company} et le profil me semble correspondre.
 
-A brief summary: I'm currently a Relationship Manager at UBP (Tel Aviv) where I originate and service HNWI clients across Israel and France, working with Geneva on KYC and onboarding. Before UBP, I spent time inside the Israeli tech ecosystem (IATI) and in wealth at Tafnit Discount. I'm a native trilingual (French, English, Hebrew) with ten years lived in the United States.
+Quelques points de cohérence :
+${bulletLines}
 
-I'd welcome a conversation about how this background could contribute to ${job.company}. My CV is attached.
+Je suis trilingue natif (français, anglais, hébreu), en cours d'un Master Finance, et basé à Tel Aviv.
 
-Best regards,
+Seriez-vous disponible pour un échange de 15 minutes la semaine prochaine pour évaluer la compatibilité ?
+
+Cordialement,
 Nessim Guez
-nessimguez1@gmail.com | +972 54 649 5846
-linkedin.com/in/nessim-guez`,
-  };
-  const warm = {
-    subject: `${job.title} — quick note before I apply`,
-    body: `Hi,
+linkedin.com/in/nessim-guez-0519411b8 | +972 54 649 5846`,
+    };
+    const warm = {
+      subject: `${job.title} chez ${job.company} – prise de contact directe`,
+      body: `Bonjour [Prénom],
 
-Saw the ${job.title} opening at ${job.company} and wanted to reach out directly before going through the standard channel.
+J'ai vu l'offre pour ${job.title} et je voulais vous contacter directement avant de passer par le circuit classique.
 
-Quick context: I'm at UBP covering HNWI clients across Israel and France, reporting into the French desk. Prior to UBP, IATI (Israeli tech ecosystem) and Tafnit Discount. Trilingual FR/EN/HE, based in Tel Aviv.
+Deux raisons pour lesquelles le fit me semble solide :
+${bulletLines}
 
-Two reasons the fit feels sharp for ${job.company}:
-${matchLines}
+En bref : RM chez UBP Tel Aviv sur le desk francophone, ancien coordinateur à l'IATI (écosystème tech israélien), trilingue FR/EN/HE. Master Finance en cours.
 
-Would 15 minutes next week work to discuss? Happy to send the CV ahead of the call.
+15 minutes la semaine prochaine seraient-elles possibles ? Je peux envoyer mon CV en amont.
+
+Cordialement,
+Nessim | +972 54 649 5846`,
+    };
+    const linkedin = {
+      subject: `LinkedIn DM — ${job.company}`,
+      body: `Bonjour — j'ai vu le poste de ${job.title} chez ${job.company}.
+
+RM chez UBP Tel Aviv (desk francophone HNWI), trilingue FR/EN/HE. ${topBullet}.
+
+Un appel de 15 min la semaine prochaine serait-il possible ?
+
+— Nessim
+linkedin.com/in/nessim-guez-0519411b8`,
+    };
+    return { cold, warm, linkedin };
+  }
+
+  // English
+  const cold = {
+    subject: `${job.title} – Nessim Guez, Tel Aviv`,
+    body: `Hi [First Name],
+
+I'm a Relationship Manager at UBP in Tel Aviv, covering French-speaking HNWI clients across Israel and France. I came across the ${job.title} opening at ${job.company} and the fit looks sharp.
+
+A few reasons why:
+${bulletLines}
+
+I'm a native trilingual (French, English, Hebrew), finishing an MA in Finance, and based in Tel Aviv — Israel-based or remote roles work directly.
+
+Would you be open to a brief 15-minute call next week to explore fit?
 
 Best,
-Nessim
-+972 54 649 5846`,
+Nessim Guez
+linkedin.com/in/nessim-guez-0519411b8 | +972 54 649 5846`,
+  };
+  const warm = {
+    subject: `${job.title} at ${job.company} – quick note`,
+    body: `Hi [First Name],
+
+Saw the ${job.title} opening and wanted to reach out directly before going through the standard channel.
+
+Two reasons the fit feels sharp:
+${bulletLines}
+
+Quick context: RM at UBP Tel Aviv on the French-speaking desk, previously at IATI (Israeli tech ecosystem) and Tafnit Discount (wealth). Trilingual FR/EN/HE, MA Finance in progress.
+
+Would 15 minutes next week work? Happy to send my CV ahead.
+
+Best,
+Nessim | +972 54 649 5846`,
   };
   const linkedin = {
     subject: `LinkedIn DM — ${job.company}`,
-    body: `Hi — saw the ${job.title} role at ${job.company} and the fit is sharp:
+    body: `Hi — saw the ${job.title} role at ${job.company}.
 
-I'm at UBP covering French-speaking HNWI clients in TLV/Paris, trilingual FR/EN/HE, with prior exposure to the IL tech ecosystem via IATI. Would 15 min next week work to discuss? I'll send the CV ahead.
+I'm an RM at UBP Tel Aviv covering French-speaking HNWI clients, trilingual FR/EN/HE. ${topBullet}.
 
-— Nessim`,
+Would a 15-min call next week work?
+
+— Nessim
+linkedin.com/in/nessim-guez-0519411b8`,
   };
   return { cold, warm, linkedin };
 }
@@ -64,15 +117,16 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
   const [tab, setTab] = useState<EmailTab>('cold');
   const [copied, setCopied] = useState(false);
   const [lang, setLang] = useState<'EN' | 'FR'>('EN');
-  const emails = genEmails(job);
+  const emails = genEmails(job, lang);
   const [subject, setSubject] = useState(emails[tab].subject);
   const [body, setBody] = useState(emails[tab].body);
 
   useEffect(() => {
-    setSubject(emails[tab].subject);
-    setBody(emails[tab].body);
+    const e = genEmails(job, lang);
+    setSubject(e[tab].subject);
+    setBody(e[tab].body);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, job.id]);
+  }, [tab, job.id, lang]);
 
   const copy = () => {
     const text = tab === 'linkedin' ? body : `Subject: ${subject}\n\n${body}`;
