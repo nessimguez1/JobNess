@@ -13,32 +13,35 @@ const NESSIM = `NESSIM'S PROFILE:
 - MA Finance (Ono Academic), BA Business Admin (Reichman/IDC).
 - 26 years old, Tel Aviv. Target: fintech BD, RM, partnerships, VC/PE analyst roles.`;
 
-const COLD_SYSTEM = `You are drafting a cold outreach email on behalf of Nessim Guez for a specific job opening.
+const COLD_SYSTEM = `You are drafting a cold outreach email that Nessim Guez will send himself. Write as Nessim, in first person.
 
-CRITICAL: Write in FIRST PERSON ("I", "my", "I've"). NEVER third person. This is an email Nessim sends himself.
+Here is a perfect example of the output format and tone:
 
-TONE: Direct. Human. Not corporate. The first sentence names who he is and what he does — no wind-up.
+---
+Hi [First Name],
 
-STRUCTURE — in this exact order, no headers:
-1. Opening (2 sentences):
-   - Sentence 1: "I'm a [current role] at [current company], [one-line description of what he actually does]."
-   - Sentence 2: One specific reason why THIS company caught his attention — name the company, name their known product/market/focus. Not generic.
-2. Three bullets (use "•") — each must be a concrete, specific action or outcome:
-   • BAD: "Consistently delivered results in fast-paced environments"
-   • BAD: "Strong network of high-net-worth individuals"
-   • GOOD: "Originate and manage a recurring pipeline of French-speaking HNWI clients between Israel and France at UBP"
-   • GOOD: "Coordinated BD initiatives with 100+ Israeli tech companies at IATI"
-   • Every bullet must name a specific place, number, or outcome. No filler.
-3. One sentence on what he's looking for — framed as value he brings, not what he wants.
-4. CTA (exactly this): "Would you be open to a brief 15-minute call next week to explore fit?"
-5. Sign-off: "Best,\\nNessim Guez\\nlinkedin.com/in/nessim-guez-0519411b8 | +972 54 649 5846"
+I'm a Relationship Manager at UBP in Tel Aviv, where I originate and manage a French-speaking HNWI client base between Israel and France. SimilarWeb's enterprise push into French-speaking markets is exactly the territory I work in daily.
 
-LENGTH: 130–160 words excluding sign-off.
+• Currently managing a recurring pipeline of French-speaking HNWI clients across the Israel–France corridor at UBP (Union Bancaire Privée).
+• Coordinated BD initiatives with 100+ Israeli tech companies at IATI — direct exposure to the enterprise SaaS buying cycle.
+• Native trilingual (French, English, Hebrew) — built to cover French-speaking enterprise accounts from day one.
 
-BANNED PHRASES (never use these):
-- "results-driven", "fast-paced environment", "high-quality results", "forward-thinking"
-- "I believe I'd be a great fit", "dream company", "very passionate", "I'm excited to"
-- Any sentence that could apply to any candidate at any company
+I'm looking for an AE or BD role where French-market access and relationship-first selling translate into measurable pipeline from week one.
+
+Would you be open to a brief 15-minute call next week to explore fit?
+
+Best,
+Nessim Guez
+linkedin.com/in/nessim-guez-0519411b8 | +972 54 649 5846
+---
+
+Follow this format exactly. Adapt the content to the actual job and company provided. Keep the same tone, length, and structure.
+
+RULES:
+- First person only ("I", "my"). Never "Nessim Guez is..." or "He is..."
+- Every bullet must name a specific company, number, or outcome — no generic claims
+- Opening sentence 2 must name the company and their specific market/product focus
+- Never use: "results-driven", "fast-paced", "forward-thinking", "high-quality", "passionate", "great fit", "excited to"
 
 ${NESSIM}
 
@@ -127,21 +130,23 @@ function openai() {
 async function generate(system: string, userMsg: string): Promise<string> {
   const params = {
     max_tokens: 500,
-    temperature: 0.7,
+    temperature: 0.5,
     messages: [
       { role: 'system' as const, content: system },
       { role: 'user'   as const, content: userMsg },
     ],
   };
+  // GPT-4o-mini primary — better instruction following for stylistic tasks
   try {
-    const res = await groq().chat.completions.create({ ...params, model: 'llama-3.3-70b-versatile' });
-    const text = res.choices[0]?.message.content?.trim() ?? '';
-    if (!text) throw new Error('empty groq response');
-    return text;
-  } catch {
     const res = await openai().chat.completions.create({ ...params, model: 'gpt-4o-mini' });
     const text = res.choices[0]?.message.content?.trim() ?? '';
     if (!text) throw new Error('empty openai response');
+    return text;
+  } catch {
+    // Groq as fallback
+    const res = await groq().chat.completions.create({ ...params, model: 'llama-3.3-70b-versatile' });
+    const text = res.choices[0]?.message.content?.trim() ?? '';
+    if (!text) throw new Error('empty groq response');
     return text;
   }
 }
