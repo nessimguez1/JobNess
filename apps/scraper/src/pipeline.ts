@@ -23,6 +23,17 @@ function isBlocked(company: string, patterns: string[]): boolean {
   return patterns.some(p => lower.includes(p.toLowerCase()));
 }
 
+const ISRAEL_PASS = [
+  'israel', 'tel aviv', 'haifa', 'jerusalem', 'beer sheva', 'herzliya', 'petah tikva',
+  'remote', 'worldwide', 'anywhere', 'hybrid',
+];
+
+function isLocationAllowed(location: string | undefined): boolean {
+  if (!location) return true; // unknown location passes through — scorer will judge
+  const loc = location.toLowerCase();
+  return ISRAEL_PASS.some(kw => loc.includes(kw));
+}
+
 function stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
 }
@@ -55,9 +66,16 @@ async function runSource(
     // Blocklist filter
     const afterBlocklist = scraped.filter(j => !isBlocked(j.company, blocklistPatterns));
 
+    // Location filter — only Israel or remote
+    const afterLocation = afterBlocklist.filter(j => {
+      if (isLocationAllowed(j.location)) return true;
+      logger.debug({ ...tag, title: j.title, location: j.location }, 'filtered by location');
+      return false;
+    });
+
     // Salary filter — unknown salary passes through (let score judge)
     const afterSalary: ScrapedJob[] = [];
-    for (const j of afterBlocklist) {
+    for (const j of afterLocation) {
       const salaryNIS = j.salary_nis ?? parseSalaryNIS(j.salary_text);
       if (salaryNIS !== undefined && salaryNIS < minSalaryNIS) {
         logger.debug({ ...tag, title: j.title, salaryNIS }, 'filtered by salary');

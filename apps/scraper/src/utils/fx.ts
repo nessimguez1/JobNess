@@ -1,9 +1,9 @@
 // Hardcoded FX rates to NIS. Update here if they drift significantly.
 const RATES: Record<string, number> = {
-  CHF: 4.15,
-  EUR: 3.95,
-  USD: 3.65,
-  GBP: 4.60,
+  CHF: 3.8,
+  EUR: 3.5,
+  USD: 2.95,
+  GBP: 3.75,
   ILS: 1.0,
   NIS: 1.0,
 };
