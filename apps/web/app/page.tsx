@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Inbox, Building2, BarChart2, Settings as SettingsIcon, RefreshCw, Lock } from 'lucide-react';
+import { Inbox, Building2, Send, BarChart2, Settings as SettingsIcon, RefreshCw, Lock } from 'lucide-react';
 import Feed from '../components/Feed';
 import Companies from '../components/Companies';
+import Outreach from '../components/Outreach';
 import Stats from '../components/Stats';
 import Settings from '../components/Settings';
 
-type Tab = 'feed' | 'companies' | 'stats' | 'settings';
+type Tab = 'feed' | 'companies' | 'outreach' | 'stats' | 'settings';
 
 export default function Terminal() {
   const [activeTab, setActiveTab] = useState<Tab>('feed');
@@ -37,6 +38,7 @@ export default function Terminal() {
             {([
               { k: 'feed' as const,      label: 'Feed',      icon: <Inbox       size={13} /> },
               { k: 'companies' as const, label: 'Companies', icon: <Building2   size={13} /> },
+              { k: 'outreach' as const,  label: 'Outreach',  icon: <Send        size={13} /> },
               { k: 'stats' as const,     label: 'Stats',     icon: <BarChart2   size={13} /> },
               { k: 'settings' as const,  label: 'Settings',  icon: <SettingsIcon size={13} /> },
             ]).map(t => (
@@ -70,6 +72,7 @@ export default function Terminal() {
         <div className="max-w-[1400px] mx-auto">
           {activeTab === 'feed' && <Feed />}
           {activeTab === 'companies' && <Companies />}
+          {activeTab === 'outreach' && <Outreach />}
           {activeTab === 'stats' && <Stats />}
           {activeTab === 'settings' && <Settings />}
         </div>
