@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+buildCommand = "pnpm install --frozen-lockfile && pnpm --filter @jobness/shared build && pnpm --filter @jobness/scraper build"
+
+[deploy]
+startCommand = "node apps/scraper/dist/index.js"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
