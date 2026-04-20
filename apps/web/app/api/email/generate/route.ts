@@ -23,7 +23,7 @@ Hi [First Name],
 I'm a Relationship Manager at UBP in Tel Aviv, where I originate and manage a French-speaking HNWI client base between Israel and France. SimilarWeb's enterprise push into French-speaking markets is exactly the territory I work in daily.
 
 • Currently managing a recurring pipeline of French-speaking HNWI clients across the Israel–France corridor at UBP (Union Bancaire Privée).
-• Coordinated BD initiatives with 100+ Israeli tech companies at IATI — direct exposure to the enterprise SaaS buying cycle.
+• Coordinated commercial initiatives with 100+ Israeli tech companies at IATI — the same ecosystem of companies that [company]'s target customers come from.
 • Native trilingual (French, English, Hebrew) — built to cover French-speaking enterprise accounts from day one.
 
 I'm looking for an AE or BD role where French-market access and relationship-first selling translate into measurable pipeline from week one.
