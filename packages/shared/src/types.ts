@@ -30,12 +30,29 @@ export interface Scoring {
 }
 
 export type OutreachMethod = 'email' | 'linkedin' | 'website';
+export type OutreachType   = 'cold' | 'speculative' | 'warm' | 'linkedin';
 
 export interface OutreachLog {
   sent_to?: string;
   outreach_method?: OutreachMethod;
   outreach_date?: string; // ISO date string
   follow_up_at?: string;  // ISO date string
+}
+
+/** Unified outreach row — a single message sent, keyed to either a job or a company. */
+export interface Outreach {
+  id: string;
+  company_id?: string;
+  job_id?: string;
+  type: OutreachType;
+  sent_to?: string;
+  method?: OutreachMethod;
+  subject?: string;
+  body?: string;
+  sent_at: string;       // ISO date
+  follow_up_at?: string; // ISO date
+  notes?: string;
+  created_at: string;
 }
 
 /** Full job row as stored in Supabase */

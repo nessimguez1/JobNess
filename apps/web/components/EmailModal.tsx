@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { X, Mail, Send, Linkedin, Check, Copy, AlertCircle, Lock, Sparkles, Loader2 } from 'lucide-react';
 import type { Job, OutreachLog, OutreachMethod } from '@jobness/shared';
+import { copyEmail } from '../lib/signature';
+import { logOutreach } from '../lib/outreach';
 
 type EmailTab = 'cold' | 'warm' | 'linkedin';
 
@@ -78,18 +80,31 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
     }
   };
 
-  const copy = () => {
-    const text = tab === 'linkedin' ? body : `Subject: ${subject}\n\n${body}`;
-    navigator.clipboard.writeText(text);
+  const copy = async () => {
+    await copyEmail({
+      kind: tab === 'linkedin' ? 'linkedin' : 'email',
+      ...(tab !== 'linkedin' ? { subject } : {}),
+      body,
+    });
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   };
 
-  const handleMarkApplied = () => {
+  const handleMarkApplied = async () => {
     const log: OutreachLog = { outreach_method: method, outreach_date: outreachDate };
     if (sentTo.trim())  log.sent_to      = sentTo.trim();
     if (followUpAt)     log.follow_up_at = followUpAt;
     onMarkApplied(job.id, log);
+    await logOutreach({
+      jobId: job.id,
+      type: tab,
+      method,
+      sentAt: outreachDate,
+      ...(sentTo.trim()   ? { sentTo: sentTo.trim() } : {}),
+      ...(followUpAt      ? { followUpAt }           : {}),
+      ...(subject.trim()  ? { subject: subject.trim() } : {}),
+      ...(body.trim()     ? { body: body.trim() }       : {}),
+    });
     onClose();
   };
 

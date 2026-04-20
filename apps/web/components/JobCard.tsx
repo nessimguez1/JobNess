@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, Mail, Trash2, RotateCcw, Send, X, Linkedin, ExternalLink, Globe, Briefcase, MapPin, Check } from 'lucide-react';
+import { Heart, Mail, Trash2, RotateCcw, Send, X, Linkedin, ExternalLink, Globe, Briefcase, MapPin, Check, Clock } from 'lucide-react';
 import type { Job } from '@jobness/shared';
 import { scoreTone, formatRelative, daysAgo } from './utils';
 
@@ -78,6 +78,17 @@ export default function JobCard({ job, onMove, onOpen, onTrash, onDraftEmail }: 
           <Check size={10} /> applied {formatRelative(appliedDays)}
         </div>
       )}
+
+      {isApplied && job.follow_up_at && (() => {
+        const today = new Date().toISOString().split('T')[0]!;
+        const due = job.follow_up_at <= today;
+        const label = new Date(job.follow_up_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return (
+          <div className={`text-[12px] num mb-2 flex items-center gap-1 ${due ? 't-amber font-semibold' : 't-muted'}`}>
+            <Clock size={10} /> {due ? 'follow up' : `follow up ${label}`}
+          </div>
+        );
+      })()}
 
       <div
         className="flex items-center justify-between gap-1 pt-2 border-t b-line"
