@@ -4,7 +4,5 @@ buildCommand = "pnpm install --frozen-lockfile && pnpm --filter @jobness/shared 
 
 [deploy]
 startCommand = "node apps/scraper/dist/index.js"
-healthcheckPath = "/health"
-healthcheckTimeout = 30
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
