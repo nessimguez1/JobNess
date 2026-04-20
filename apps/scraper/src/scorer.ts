@@ -194,7 +194,7 @@ Hard fail (≤ 30): VP · Director · MD · Partner · C-suite · "Head of" at c
 • >5 years required and role is clearly senior IC or management
 
 ━━ SALARY ━━
-Convert to NIS/month: 1 USD=3.7 · 1 EUR=4.0 · 1 CHF=4.1 · 1 GBP=4.7.
+Convert to NIS/month: 1 USD=2.95 · 1 EUR=3.5 · 1 CHF=3.8 · 1 GBP=4.0.
 If salary unknown → do not penalise. If salary < 18,000 NIS and explicitly stated → lower score by 5.
 
 ━━ OUTPUT ━━
