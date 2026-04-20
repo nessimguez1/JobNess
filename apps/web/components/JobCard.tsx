@@ -4,6 +4,13 @@ import { Heart, Mail, Trash2, RotateCcw, Send, X, Linkedin, ExternalLink, Globe,
 import type { Job } from '@jobness/shared';
 import { scoreTone, formatRelative, daysAgo } from './utils';
 
+const AVATAR_COLORS = ['#e6ece0', '#e4ebf2', '#f2e9cc', '#f2e4e0', '#ede8f2', '#e4ede0'];
+function avatarColor(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_COLORS[h % AVATAR_COLORS.length]!;
+}
+
 function SourceIcon({ source, size = 10 }: { source: string; size?: number }) {
   if (source === 'LinkedIn') return <Linkedin size={size} />;
   if (source === 'CareerPage') return <Globe size={size} />;
@@ -28,16 +35,16 @@ export default function JobCard({ job, onMove, onOpen, onTrash, onDraftEmail }: 
 
   return (
     <div
-      className="bg-card border b-line rounded-lg p-3 card-hover fade-in cursor-pointer"
+      className="bg-card border b-line rounded-lg p-4 hover:shadow-md hover:-translate-y-[1px] transition-all duration-150 fade-in cursor-pointer"
       onClick={() => onOpen(job)}
     >
-      <div className="flex items-start justify-between gap-2 mb-2.5">
+      <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="w-8 h-8 rounded-md bg-soft border b-line flex items-center justify-center shrink-0">
-            <span className="text-[12px] t-ink font-semibold num">{job.mono ?? job.company.slice(0, 2).toUpperCase()}</span>
+          <div className="w-8 h-8 rounded-md flex items-center justify-center shrink-0" style={{ backgroundColor: avatarColor(job.company) }}>
+            <span className="text-[13px] t-ink font-bold num">{job.mono ?? job.company.slice(0, 2).toUpperCase()}</span>
           </div>
           <div className="min-w-0">
-            <div className="t-ink text-[13px] font-medium truncate">{job.company}</div>
+            <div className="t-muted text-[12px] font-medium truncate">{job.company}</div>
             <div className="t-dim text-[12px] num flex items-center gap-1">
               <SourceIcon source={job.source} size={10} />
               <span>{job.source}</span>
@@ -45,12 +52,12 @@ export default function JobCard({ job, onMove, onOpen, onTrash, onDraftEmail }: 
             </div>
           </div>
         </div>
-        <div className={`px-1.5 py-0.5 rounded-md border text-[12px] num font-semibold shrink-0 ${tone.bg} ${tone.border}`}>
+        <div className={`px-2.5 py-1 rounded-md border text-[13px] num font-bold shrink-0 ${tone.bg} ${tone.border}`}>
           <span className={tone.text}>{job.score}</span>
         </div>
       </div>
 
-      <div className="text-[14px] leading-snug t-ink font-medium mb-1.5">{job.title}</div>
+      <div className="text-[15px] leading-snug t-ink font-semibold mb-3">{job.title}</div>
 
       {job.location && (
         <div className="flex items-center gap-1.5 text-[12px] t-muted mb-1.5 num">
@@ -63,7 +70,7 @@ export default function JobCard({ job, onMove, onOpen, onTrash, onDraftEmail }: 
       )}
 
       {!isArchived && job.fit_note && (
-        <div className="text-[12px] t-muted leading-snug mb-3 bg-soft rounded-md p-2 border b-line">{job.fit_note}</div>
+        <div className="text-[12px] t-muted leading-snug mb-3 border-l-2 border-[#3a5a7a] pl-3">{job.fit_note}</div>
       )}
 
       {isApplied && job.applied_at && (

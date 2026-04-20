@@ -24,16 +24,13 @@ export default function Terminal() {
 
   return (
     <div className="app-font bg-paper t-ink min-h-screen paper-texture">
-      <header className="border-b b-line bg-paper sticky top-0 z-30">
-        <div className="px-6 py-3 flex items-center gap-6">
+      <header className="border-b b-line-strong bg-paper sticky top-0 z-30">
+        <div className="px-5 py-3 flex items-center gap-6">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-md bg-ink flex items-center justify-center">
-              <span className="t-paper text-[15px] font-semibold num">N</span>
+            <div className="w-8 h-8 rounded-md bg-ink flex items-center justify-center shrink-0">
+              <span className="t-paper text-[15px] font-bold tracking-tight">J</span>
             </div>
-            <div>
-              <div className="t-ink text-[16px] font-semibold leading-none">Terminal</div>
-              <div className="num t-dim text-[9px] uppercase tracking-widest mt-0.5">v0.2 · private</div>
-            </div>
+            <span className="font-semibold text-[15px] t-ink tracking-tight">JobNess</span>
           </div>
 
           <nav className="flex items-center gap-0.5">
@@ -46,7 +43,7 @@ export default function Terminal() {
               <button
                 key={t.k}
                 onClick={() => setActiveTab(t.k)}
-                className={`px-3 py-1.5 rounded-md text-[12px] num font-medium flex items-center gap-1.5 transition-colors ${activeTab === t.k ? 'bg-ink t-paper' : 't-muted hover:t-ink hover:bg-soft'}`}
+                className={`px-3 py-1.5 rounded-md text-[12px] num font-medium flex items-center gap-1.5 transition-colors ${activeTab === t.k ? 'bg-card border b-line t-ink' : 'border border-transparent t-muted hover:t-ink hover:bg-soft'}`}
               >
                 {t.icon} {t.label}
               </button>
@@ -70,11 +67,12 @@ export default function Terminal() {
       </header>
 
       <main className="px-6 py-5">
-        {activeTab === 'feed' && <Feed />}
-
-        {activeTab === 'targets' && <Targets />}
-        {activeTab === 'stats' && <Stats />}
-        {activeTab === 'settings' && <Settings />}
+        <div className="max-w-[1400px] mx-auto">
+          {activeTab === 'feed' && <Feed />}
+          {activeTab === 'targets' && <Targets />}
+          {activeTab === 'stats' && <Stats />}
+          {activeTab === 'settings' && <Settings />}
+        </div>
       </main>
     </div>
   );
