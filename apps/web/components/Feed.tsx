@@ -62,16 +62,22 @@ export default function Feed() {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [emailJob, setEmailJob] = useState<Job | null>(null);
 
-  useEffect(() => {
-    supabase
+  const loadJobs = useCallback(async () => {
+    const { data } = await supabase
       .from('jobs')
       .select('*')
-      .order('score', { ascending: false })
-      .then(({ data }) => {
-        setJobs((data as Job[]) ?? []);
-        setLoading(false);
-      });
+      .order('score', { ascending: false });
+    setJobs((data as Job[]) ?? []);
+    setLoading(false);
   }, []);
+
+  useEffect(() => { loadJobs(); }, [loadJobs]);
+
+  useEffect(() => {
+    const handler = () => { loadJobs(); };
+    window.addEventListener('jobness:scrape-complete', handler);
+    return () => window.removeEventListener('jobness:scrape-complete', handler);
+  }, [loadJobs]);
 
   const moveJob = useCallback(async (id: string, col: Job['column_name']) => {
     const statusMap: Record<Job['column_name'], Job['status']> = {

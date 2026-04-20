@@ -1,27 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { Inbox, Building2, Send, BarChart2, Settings as SettingsIcon, RefreshCw, Lock } from 'lucide-react';
+import { Inbox, Building2, Send, BarChart2, Settings as SettingsIcon, Lock } from 'lucide-react';
 import Feed from '../components/Feed';
 import Companies from '../components/Companies';
 import Outreach from '../components/Outreach';
 import Stats from '../components/Stats';
 import Settings from '../components/Settings';
+import ScrapeStatus from '../components/ScrapeStatus';
 
 type Tab = 'feed' | 'companies' | 'outreach' | 'stats' | 'settings';
 
 export default function Terminal() {
   const [activeTab, setActiveTab] = useState<Tab>('feed');
-  const [refreshing, setRefreshing] = useState(false);
-
-  async function triggerRefresh() {
-    setRefreshing(true);
-    try {
-      await fetch('/api/scraper/run', { method: 'POST' });
-    } finally {
-      setTimeout(() => setRefreshing(false), 2000);
-    }
-  }
 
   return (
     <div className="app-font bg-paper t-ink min-h-screen paper-texture">
@@ -53,13 +44,7 @@ export default function Terminal() {
           </nav>
 
           <div className="ml-auto flex items-center gap-3">
-            <button
-              onClick={triggerRefresh}
-              className="btn-ghost p-1.5 rounded"
-              title="Refresh now"
-            >
-              <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
-            </button>
+            <ScrapeStatus />
             <div className="w-px h-6 bg-softer" />
             <div className="text-[12px] num t-muted flex items-center gap-1.5">
               <Lock size={11} /> Nessim G.
