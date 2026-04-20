@@ -39,6 +39,47 @@ function stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
 }
 
+async function scoreAndInsert(
+  job: ScrapedJob,
+  supabase: ReturnType<typeof createClient>,
+  tag: Record<string, unknown>,
+): Promise<boolean> {
+  try {
+    const scoring = await scoreJob(job);
+    if (scoring.score < 40) {
+      logger.debug({ ...tag, title: job.title, score: scoring.score }, 'dropped by score');
+      return false;
+    }
+    const row = stripUndefined({
+      ...(job as unknown as Record<string, unknown>),
+      score: scoring.score,
+      fit_note: scoring.fit_note,
+      match_bullets: scoring.match_bullets,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: insertErr } = await supabase.from('jobs').insert(row as any);
+    if (insertErr) throw insertErr;
+    logger.info({ ...tag, title: job.title, score: scoring.score }, 'inserted');
+    return true;
+  } catch (err) {
+    logger.error({ ...tag, title: job.title, err }, 'failed to score/insert');
+    return false;
+  }
+}
+
+async function runBatched<T>(
+  items: T[],
+  fn: (item: T) => Promise<boolean>,
+  batchSize = 5,
+): Promise<number> {
+  let count = 0;
+  for (let i = 0; i < items.length; i += batchSize) {
+    const results = await Promise.all(items.slice(i, i + batchSize).map(fn));
+    count += results.filter(Boolean).length;
+  }
+  return count;
+}
+
 async function runSource(
   sourceName: string,
   scraper: () => Promise<ScrapedJob[]>,
@@ -100,30 +141,8 @@ async function runSource(
 
     logger.info({ ...tag, new: newJobs.length }, 'new jobs after dedup');
 
-    // Score and insert
-    let inserted = 0;
-    for (const job of newJobs) {
-      try {
-        const scoring = await scoreJob(job);
-        if (scoring.score < 40) {
-          logger.debug({ ...tag, title: job.title, score: scoring.score }, 'dropped by score');
-          continue;
-        }
-        const row = stripUndefined({
-          ...(job as unknown as Record<string, unknown>),
-          score: scoring.score,
-          fit_note: scoring.fit_note,
-          match_bullets: scoring.match_bullets,
-        });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error: insertErr } = await supabase.from('jobs').insert(row as any);
-        if (insertErr) throw insertErr;
-        inserted++;
-        logger.info({ ...tag, title: job.title, score: scoring.score }, 'inserted');
-      } catch (err) {
-        logger.error({ ...tag, title: job.title, err }, 'failed to score/insert');
-      }
-    }
+    // Score and insert — 5 concurrent Groq calls per batch to respect free-tier rate limits.
+    const inserted = await runBatched(newJobs, (job) => scoreAndInsert(job, supabase, tag), 5);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase.from('scrape_runs') as any)
@@ -156,10 +175,14 @@ export async function runAllScrapers(): Promise<void> {
   const patterns = ((bl ?? []) as { pattern: string }[]).map(r => r.pattern);
   const minSalary = (settings as { min_salary_nis: number } | null)?.min_salary_nis ?? 18000;
 
-  await runSource('LinkedIn', runLinkedInJobs, patterns, minSalary);
-  await runSource('HiddenMarket', runLinkedInPosts, patterns, minSalary);
-  await runSource('CareerPage', runCareerPages, patterns, minSalary);
-  await runSource('Drushim', runDrushim, patterns, minSalary);
+  // Sources run in parallel — each owns its own scrape_runs row + error handling,
+  // so Promise.all is safe. Total wall time becomes max(slowest) instead of sum(all).
+  await Promise.all([
+    runSource('LinkedIn',     runLinkedInJobs,  patterns, minSalary),
+    runSource('HiddenMarket', runLinkedInPosts, patterns, minSalary),
+    runSource('CareerPage',   runCareerPages,   patterns, minSalary),
+    runSource('Drushim',      runDrushim,       patterns, minSalary),
+  ]);
 
   // Refresh per-company job counts so the Companies page is in sync.
   await refreshCompanyJobStats(db);
