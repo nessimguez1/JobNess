@@ -61,9 +61,24 @@ export const PROFILE = {
     "Tech BD at scale-ups",
   ],
   seniority: {
-    paper: "Associate / Analyst level",
-    realistic:
-      "Punches above — Private Banking RM for FR-speaking HNWI at tier-1 Swiss banks (Pictet, Lombard Odier, Julius Baer, Edmond de Rothschild). Head of BD at early-stage fintech (Seed/Series A, 5-30 people). Skip middle-management BD at large companies.",
+    yearsRealExperience: 4.5,
+    note: "IDF years excluded. Eden BD (2yr) + IATI coordinator (1yr) + Tafnit intern (1yr) + UBP RM (current, ~6mo). Genuinely junior-to-mid.",
+    goodFit: [
+      "Analyst, Associate, Junior/Senior Associate at any firm",
+      "Relationship Manager or Account Manager (any level)",
+      "BD Associate or BD Manager at Seed/Series A/B company (<50 people)",
+      "VC/PE Analyst or Associate",
+      "Finance Analyst or Treasury Analyst",
+    ],
+    stretch: [
+      "Manager at a scale-up if role is IC-heavy (no large team to manage)",
+      "Senior roles at small companies where 'senior' means individual contributor",
+    ],
+    hardFail: [
+      "VP, Director, Managing Director, Partner, C-suite",
+      "Head of BD/Sales/Partnerships at company >100 people",
+      "Any role explicitly requiring 7+ years experience",
+    ],
   },
   constraints: {
     minSalaryNIS: 18000,
