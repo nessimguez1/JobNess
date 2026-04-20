@@ -3,10 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "packageManager": "pnpm@9.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "pnpm -r build",
     "dev:web": "pnpm --filter web dev",
-    "dev:scraper": "pnpm --filter scraper dev",
+    "dev:scraper": "pnpm --filter @jobness/shared build && pnpm --filter scraper dev",
     "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {

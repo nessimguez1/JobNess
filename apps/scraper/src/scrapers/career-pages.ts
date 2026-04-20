@@ -1,0 +1,64 @@
+import type { ScrapedJob } from '@jobness/shared';
+import { CAREER_PAGES } from '../config/career-pages.js';
+import { jobId, mono } from '../utils/hash.js';
+import { logger } from '../utils/logger.js';
+
+interface GreenhouseJob {
+  id: number;
+  title: string;
+  location: { name: string };
+  absolute_url: string;
+  updated_at: string;
+  content?: string;
+}
+
+interface GreenhouseResponse {
+  jobs: GreenhouseJob[];
+}
+
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 2000);
+}
+
+async function fromGreenhouse(
+  company: string,
+  slug: string,
+  website: string | undefined,
+): Promise<ScrapedJob[]> {
+  const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs`);
+  if (!res.ok) throw new Error(`Greenhouse ${slug}: HTTP ${res.status}`);
+  const data = (await res.json()) as GreenhouseResponse;
+
+  return data.jobs.map(j => {
+    const job: ScrapedJob = {
+      id: jobId(company, j.title, j.location.name),
+      title: j.title,
+      company,
+      mono: mono(company),
+      location: j.location.name,
+      source: 'CareerPage',
+      url: j.absolute_url,
+      posted_at: j.updated_at,
+    };
+    if (website) job.company_site = website;
+    if (j.content) job.description = stripHtml(j.content);
+    return job;
+  });
+}
+
+export async function run(): Promise<ScrapedJob[]> {
+  const results: ScrapedJob[] = [];
+  for (const target of CAREER_PAGES) {
+    try {
+      let jobs: ScrapedJob[] = [];
+      if (target.ats === 'greenhouse') {
+        jobs = await fromGreenhouse(target.company, target.slug, target.website);
+      }
+      logger.info({ company: target.company, count: jobs.length }, 'career-pages scraped');
+      results.push(...jobs);
+    } catch (err) {
+      logger.error({ company: target.company, err }, 'career-pages scrape failed');
+    }
+  }
+  return results;
+}
