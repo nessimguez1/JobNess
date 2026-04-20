@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Inbox, Heart, Send, Archive } from 'lucide-react';
-import type { Job } from '@jobness/shared';
+import type { Job, OutreachLog } from '@jobness/shared';
 import { supabase } from '../lib/supabase';
 import JobCard from './JobCard';
 import JobDetailModal from './JobDetailModal';
@@ -83,9 +83,18 @@ export default function Feed() {
     await supabase.from('jobs').update(update).eq('id', id);
   }, []);
 
-  const markApplied = useCallback(async (id: string) => {
-    await moveJob(id, 'applied');
-  }, [moveJob]);
+  const markApplied = useCallback(async (id: string, log?: OutreachLog) => {
+    const update: Partial<Job> = {
+      column_name: 'applied',
+      status: 'applied',
+      applied_at: log?.outreach_date
+        ? new Date(log.outreach_date).toISOString()
+        : new Date().toISOString(),
+      ...log,
+    };
+    setJobs(prev => prev.map(j => j.id === id ? { ...j, ...update } : j));
+    await supabase.from('jobs').update(update).eq('id', id);
+  }, [setJobs]);
 
   const byCol = (col: Job['column_name']) => jobs.filter(j => j.column_name === col);
 

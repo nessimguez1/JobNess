@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cron from 'node-cron';
 import express from 'express';
 import { runAllScrapers } from './pipeline.js';
+import { generateEmail, type EmailRequest } from './scorer.js';
 import { logger } from './utils/logger.js';
 
 const app = express();
@@ -14,6 +15,33 @@ app.post('/run', (req, res) => {
   }
   runAllScrapers().catch(err => logger.error({ err }, '/run pipeline failed'));
   res.json({ status: 'started' });
+});
+
+app.post('/generate-email', async (req, res) => {
+  if (req.headers['x-auth'] !== process.env['SCRAPER_SHARED_SECRET']) {
+    res.status(401).end();
+    return;
+  }
+  const { type, title, company, fit_note, match_bullets, context } = req.body as Partial<EmailRequest>;
+  if (!type || !title || !company) {
+    res.status(400).json({ error: 'type, title, and company are required' });
+    return;
+  }
+  if (type === 'warm' && !context?.trim()) {
+    res.status(400).json({ error: 'context is required for warm emails' });
+    return;
+  }
+  try {
+    const emailReq: EmailRequest = { type, title, company };
+    if (fit_note)       emailReq.fit_note       = fit_note;
+    if (match_bullets)  emailReq.match_bullets  = match_bullets;
+    if (context?.trim()) emailReq.context       = context;
+    const body = await generateEmail(emailReq);
+    res.json({ body });
+  } catch (err) {
+    logger.error({ err }, '/generate-email failed');
+    res.status(500).json({ error: 'generation failed' });
+  }
 });
 
 app.get('/health', (_req, res) => {

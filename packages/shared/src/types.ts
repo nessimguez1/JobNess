@@ -29,6 +29,15 @@ export interface Scoring {
   match_bullets: string[];
 }
 
+export type OutreachMethod = 'email' | 'linkedin' | 'website';
+
+export interface OutreachLog {
+  sent_to?: string;
+  outreach_method?: OutreachMethod;
+  outreach_date?: string; // ISO date string
+  follow_up_at?: string;  // ISO date string
+}
+
 /** Full job row as stored in Supabase */
 export interface Job extends ScrapedJob {
   score: number;
@@ -40,6 +49,11 @@ export interface Job extends ScrapedJob {
   trashed_at?: string;
   created_at: string;
   updated_at: string;
+  // outreach tracking
+  sent_to?: string;
+  outreach_method?: OutreachMethod;
+  outreach_date?: string;
+  follow_up_at?: string;
 }
 
 /** Target company row */
