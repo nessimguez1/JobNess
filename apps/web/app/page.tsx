@@ -1,8 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Inbox, Target, BarChart2, Settings, RefreshCw, Lock } from 'lucide-react';
+import { Inbox, Target, BarChart2, Settings as SettingsIcon, RefreshCw, Lock } from 'lucide-react';
 import Feed from '../components/Feed';
+import Targets from '../components/Targets';
+import Stats from '../components/Stats';
+import Settings from '../components/Settings';
 
 type Tab = 'feed' | 'targets' | 'stats' | 'settings';
 
@@ -38,7 +41,7 @@ export default function Terminal() {
               { k: 'feed' as const,     label: 'Feed',     icon: <Inbox    size={13} /> },
               { k: 'targets' as const,  label: 'Targets',  icon: <Target   size={13} /> },
               { k: 'stats' as const,    label: 'Stats',    icon: <BarChart2 size={13} /> },
-              { k: 'settings' as const, label: 'Settings', icon: <Settings size={13} /> },
+              { k: 'settings' as const, label: 'Settings', icon: <SettingsIcon size={13} /> },
             ]).map(t => (
               <button
                 key={t.k}
@@ -69,15 +72,9 @@ export default function Terminal() {
       <main className="px-6 py-5">
         {activeTab === 'feed' && <Feed />}
 
-        {activeTab === 'targets' && (
-          <div className="t-dim text-[13px] num italic pt-10 text-center">Targets tab — coming in Phase 4</div>
-        )}
-        {activeTab === 'stats' && (
-          <div className="t-dim text-[13px] num italic pt-10 text-center">Stats tab — coming in Phase 4</div>
-        )}
-        {activeTab === 'settings' && (
-          <div className="t-dim text-[13px] num italic pt-10 text-center">Settings tab — coming in Phase 4</div>
-        )}
+        {activeTab === 'targets' && <Targets />}
+        {activeTab === 'stats' && <Stats />}
+        {activeTab === 'settings' && <Settings />}
       </main>
     </div>
   );

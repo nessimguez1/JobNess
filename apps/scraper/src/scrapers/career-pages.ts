@@ -16,15 +16,20 @@ interface GreenhouseResponse {
   jobs: GreenhouseJob[];
 }
 
+interface LeverJob {
+  id: string;
+  text: string;
+  hostedUrl: string;
+  categories: { location?: string; team?: string };
+  createdAt: number;
+  descriptionPlain?: string;
+}
+
 function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 2000);
 }
 
-async function fromGreenhouse(
-  company: string,
-  slug: string,
-  website: string | undefined,
-): Promise<ScrapedJob[]> {
+async function fromGreenhouse(company: string, slug: string, website: string | undefined): Promise<ScrapedJob[]> {
   const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${slug}/jobs`);
   if (!res.ok) throw new Error(`Greenhouse ${slug}: HTTP ${res.status}`);
   const data = (await res.json()) as GreenhouseResponse;
@@ -46,6 +51,29 @@ async function fromGreenhouse(
   });
 }
 
+async function fromLever(company: string, slug: string, website: string | undefined): Promise<ScrapedJob[]> {
+  const res = await fetch(`https://api.lever.co/v0/postings/${slug}?mode=json`);
+  if (!res.ok) throw new Error(`Lever ${slug}: HTTP ${res.status}`);
+  const data = (await res.json()) as LeverJob[];
+
+  return data.map(j => {
+    const location = j.categories.location ?? '';
+    const job: ScrapedJob = {
+      id: jobId(company, j.text, location),
+      title: j.text,
+      company,
+      mono: mono(company),
+      location,
+      source: 'CareerPage',
+      url: j.hostedUrl,
+      posted_at: new Date(j.createdAt).toISOString(),
+    };
+    if (website) job.company_site = website;
+    if (j.descriptionPlain) job.description = j.descriptionPlain.slice(0, 2000);
+    return job;
+  });
+}
+
 export async function run(): Promise<ScrapedJob[]> {
   const results: ScrapedJob[] = [];
   for (const target of CAREER_PAGES) {
@@ -53,6 +81,8 @@ export async function run(): Promise<ScrapedJob[]> {
       let jobs: ScrapedJob[] = [];
       if (target.ats === 'greenhouse') {
         jobs = await fromGreenhouse(target.company, target.slug, target.website);
+      } else if (target.ats === 'lever') {
+        jobs = await fromLever(target.company, target.slug, target.website);
       }
       logger.info({ company: target.company, count: jobs.length }, 'career-pages scraped');
       results.push(...jobs);
