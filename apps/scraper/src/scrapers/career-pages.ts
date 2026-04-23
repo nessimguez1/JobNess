@@ -84,10 +84,13 @@ export async function run(): Promise<ScrapedJob[]> {
       } else if (target.ats === 'lever') {
         jobs = await fromLever(target.company, target.slug, target.website);
       }
-      logger.info({ company: target.company, count: jobs.length }, 'career-pages scraped');
+      logger.info(`career-pages scraped [${target.company}]: ${jobs.length} jobs`);
       results.push(...jobs);
     } catch (err) {
-      logger.error({ company: target.company, err }, 'career-pages scrape failed');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const e = err as any;
+      const detail = e?.status ? `[${e.status}] ${e.message}` : (e?.message ?? String(err));
+      logger.error(`career-pages scrape failed [${target.company}]: ${detail}`);
     }
   }
   return results;

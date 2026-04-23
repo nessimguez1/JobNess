@@ -62,7 +62,10 @@ async function scoreAndInsert(
     logger.info({ ...tag, title: job.title, score: scoring.score }, 'inserted');
     return true;
   } catch (err) {
-    logger.error({ ...tag, title: job.title, err }, 'failed to score/insert');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const e = err as any;
+    const detail = e?.status ? `[${e.status}] ${e.message}` : (e?.message ?? String(err));
+    logger.error(`failed to score/insert [${job.title}]: ${detail}`);
     return false;
   }
 }

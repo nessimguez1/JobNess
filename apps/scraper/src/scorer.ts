@@ -265,16 +265,29 @@ async function scoreWithOpenAI(job: ScrapedJob): Promise<Scoring> {
   return parseJson(text);
 }
 
+function describeErr(err: unknown): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const e = err as any;
+  const status = e?.status ?? e?.response?.status;
+  const code   = e?.code   ?? e?.error?.code;
+  const msg    = e?.message ?? String(err);
+  return [status && `[${status}]`, code && `(${code})`, msg].filter(Boolean).join(' ');
+}
+
 export async function scoreJob(job: ScrapedJob): Promise<Scoring> {
   try {
     const scoring = await scoreWithGroq(job);
     logger.debug({ title: job.title, score: scoring.score }, 'scored (groq)');
     return scoring;
-  } catch (err: unknown) {
-    // Groq rate-limit or unavailable — fall back to OpenAI gpt-4o-mini
-    logger.warn({ title: job.title, err: String(err) }, 'groq failed — falling back to openai');
-    const scoring = await scoreWithOpenAI(job);
-    logger.debug({ title: job.title, score: scoring.score }, 'scored (openai)');
-    return scoring;
+  } catch (groqErr: unknown) {
+    logger.warn(`groq failed [${job.title}]: ${describeErr(groqErr)} — falling back to openai`);
+    try {
+      const scoring = await scoreWithOpenAI(job);
+      logger.debug({ title: job.title, score: scoring.score }, 'scored (openai)');
+      return scoring;
+    } catch (openaiErr: unknown) {
+      logger.error(`openai also failed [${job.title}]: ${describeErr(openaiErr)}`);
+      throw openaiErr;
+    }
   }
 }
