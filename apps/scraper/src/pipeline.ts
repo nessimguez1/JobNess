@@ -47,7 +47,8 @@ const TITLE_DROP_PATTERNS = [
   'android engineer', 'android developer',
   'embedded engineer', 'firmware engineer',
   'devops engineer', 'sre', 'site reliability',
-  'platform engineer', 'infrastructure engineer', 'cloud engineer',
+  'platform engineer', 'infrastructure engineer',
+  'cloud engineer', 'cloud architect',
   'security engineer', 'security researcher', 'cybersecurity',
   'qa engineer', 'qa automation', 'test engineer', 'sdet',
   'data engineer', 'data scientist', 'data analyst',
@@ -58,6 +59,9 @@ const TITLE_DROP_PATTERNS = [
   'hardware engineer', 'electrical engineer', 'mechanical engineer',
   'chip', 'asic', 'fpga', 'silicon',
   'game developer', 'unity developer', 'unreal developer',
+  'web developer', 'web development', 'wordpress',
+  'principal engineer', 'staff engineer',
+  'team lead r&d', 'r&d team lead', 'engineering manager', 'director of engineering',
   // Non-engineering roles
   'product designer', 'ux designer', 'ui designer', 'graphic designer',
   'scrum master', 'technical writer',
@@ -65,6 +69,16 @@ const TITLE_DROP_PATTERNS = [
   'marketing', 'growth marketer', 'content writer', 'copywriter',
   'customer success', 'customer support', 'support engineer',
   'intern', 'interns', 'internship', 'student',
+  // Back-office finance / admin — not the analyst/BD roles we're targeting
+  'receptionist',
+  'accounts receivable', 'accounts payable', 'billing specialist', 'payroll',
+  'tax manager', 'tax analyst', 'global tax',
+  'corporate controller', 'financial controller', 'controller',
+  'post-merger integration',
+  'grc', 'compliance officer', 'compliance manager',
+  'community builder', 'community manager',
+  // Too senior — scorer hard-fails these anyway
+  'head of', 'director of', 'vp of', 'vp,', 'chief',
 ];
 
 // Safety allow-list — these beat the drop list (e.g. Solutions Engineer is sales-adj, not SWE).

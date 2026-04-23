@@ -274,20 +274,38 @@ function describeErr(err: unknown): string {
   return [status && `[${status}]`, code && `(${code})`, msg].filter(Boolean).join(' ');
 }
 
+// Groq free-tier has a 100K tokens-per-day cap. Once we hit it, every remaining
+// Groq call in this process is a guaranteed 429 — skip straight to OpenAI so we
+// don't burn ~1s of latency per job on a doomed request.
+let _groqDisabledReason: string | null = null;
+
+function isGroqTpdExhaustion(err: unknown): boolean {
+  const msg = describeErr(err).toLowerCase();
+  return msg.includes('tokens per day') || msg.includes('(tpd)');
+}
+
 export async function scoreJob(job: ScrapedJob): Promise<Scoring> {
-  try {
-    const scoring = await scoreWithGroq(job);
-    logger.debug({ title: job.title, score: scoring.score }, 'scored (groq)');
-    return scoring;
-  } catch (groqErr: unknown) {
-    logger.warn(`groq failed [${job.title}]: ${describeErr(groqErr)} — falling back to openai`);
+  if (!_groqDisabledReason) {
     try {
-      const scoring = await scoreWithOpenAI(job);
-      logger.debug({ title: job.title, score: scoring.score }, 'scored (openai)');
+      const scoring = await scoreWithGroq(job);
+      logger.debug({ title: job.title, score: scoring.score }, 'scored (groq)');
       return scoring;
-    } catch (openaiErr: unknown) {
-      logger.error(`openai also failed [${job.title}]: ${describeErr(openaiErr)}`);
-      throw openaiErr;
+    } catch (groqErr: unknown) {
+      if (isGroqTpdExhaustion(groqErr)) {
+        _groqDisabledReason = describeErr(groqErr);
+        logger.warn(`groq TPD exhausted — skipping groq for rest of run: ${_groqDisabledReason}`);
+      } else {
+        logger.warn(`groq failed [${job.title}]: ${describeErr(groqErr)} — falling back to openai`);
+      }
     }
+  }
+
+  try {
+    const scoring = await scoreWithOpenAI(job);
+    logger.debug({ title: job.title, score: scoring.score }, 'scored (openai)');
+    return scoring;
+  } catch (openaiErr: unknown) {
+    logger.error(`openai failed [${job.title}]: ${describeErr(openaiErr)}`);
+    throw openaiErr;
   }
 }
