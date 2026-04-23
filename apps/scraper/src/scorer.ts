@@ -1,7 +1,21 @@
 import OpenAI from 'openai';
 import type { ScrapedJob, Scoring } from '@jobness/shared';
-import { PROFILE } from '@jobness/shared';
 import { logger } from './utils/logger.js';
+
+// Compact job representation for the scorer. Nessim's profile is already
+// embedded in SCORING_SYSTEM, so don't re-send it per call. Trim the
+// description and drop fields the scorer doesn't need (IDs, source, URL).
+function jobForScoring(job: ScrapedJob): string {
+  const desc = (job.description ?? '').slice(0, 1200).replace(/\s+/g, ' ').trim();
+  const parts = [
+    `Title: ${job.title}`,
+    `Company: ${job.company}`,
+    job.location ? `Location: ${job.location}` : null,
+    job.salary_text ? `Salary: ${job.salary_text}` : null,
+    desc ? `Description: ${desc}` : null,
+  ].filter(Boolean);
+  return parts.join('\n');
+}
 
 export type EmailType = 'cold' | 'warm' | 'linkedin';
 
@@ -236,10 +250,7 @@ async function scoreWithGroq(job: ScrapedJob): Promise<Scoring> {
     temperature: 0.1,
     messages: [
       { role: 'system', content: SCORING_SYSTEM },
-      {
-        role: 'user',
-        content: `PROFILE:\n${JSON.stringify(PROFILE, null, 2)}\n\nJOB:\n${JSON.stringify(job, null, 2)}\n\nReturn the JSON scoring.`,
-      },
+      { role: 'user', content: `${jobForScoring(job)}\n\nReturn the JSON scoring.` },
     ],
   });
   const text = res.choices[0]?.message.content ?? '';
@@ -254,10 +265,7 @@ async function scoreWithOpenAI(job: ScrapedJob): Promise<Scoring> {
     temperature: 0.1,
     messages: [
       { role: 'system', content: SCORING_SYSTEM },
-      {
-        role: 'user',
-        content: `PROFILE:\n${JSON.stringify(PROFILE, null, 2)}\n\nJOB:\n${JSON.stringify(job, null, 2)}\n\nReturn the JSON scoring.`,
-      },
+      { role: 'user', content: `${jobForScoring(job)}\n\nReturn the JSON scoring.` },
     ],
   });
   const text = res.choices[0]?.message.content ?? '';
@@ -284,9 +292,10 @@ function isGroqTpdExhaustion(err: unknown): boolean {
   return msg.includes('tokens per day') || msg.includes('(tpd)');
 }
 
-// Global concurrency gate — without this, 4 sources × 5 per-source concurrency
-// fires 20 parallel scorer calls, which saturates OpenAI's 200k TPM on gpt-4o-mini.
-const SCORE_GATE_LIMIT = 5;
+// Global concurrency gate across all sources. 3 is deliberately conservative —
+// above that we saturate OpenAI's 200k TPM on gpt-4o-mini and every excess
+// request comes back 429, which actively wastes tokens on the retries.
+const SCORE_GATE_LIMIT = 3;
 let _scoreInFlight = 0;
 const _scoreWaiters: Array<() => void> = [];
 
