@@ -67,127 +67,138 @@ export default function Settings() {
     savePatch({ geo });
   };
 
-  if (loading) return <div className="t-dim text-[12px] num italic pt-10 text-center">Loading…</div>;
+  if (loading) return <div className="t-muted text-[13px] num italic pt-10 text-center">Loading…</div>;
 
   return (
     <div>
       <h2 className="t-ink text-[24px] font-semibold leading-tight mb-1">Settings</h2>
-      <div className="t-muted text-[12px] num mb-5">filters, sources, blocklist, CV</div>
+      <div className="t-muted text-[13px] num mb-5">filters, sources, blocklist, CV</div>
 
       <div className="max-w-3xl space-y-4">
-        <div className="bg-card border b-line rounded-lg p-5">
+        <section className="bg-card border b-line rounded-lg p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Sliders size={14} className="t-ink" />
-            <div className="t-ink text-[14px] font-semibold">Filters</div>
+            <Sliders size={15} className="t-ink" aria-hidden="true" />
+            <h3 className="t-ink text-[14px] font-semibold">Filters</h3>
           </div>
           <div className="space-y-4">
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="t-muted text-[12px]">Minimum monthly salary (NIS)</div>
-                <div className="num t-ink text-[13px] font-semibold">{sliderVal.toLocaleString()}</div>
-              </div>
-              <input type="range" min="10000" max="50000" step="500"
-                value={sliderVal}
-                onChange={e => setSliderVal(parseInt(e.target.value))}
-                onMouseUp={e => savePatch({ min_salary_nis: parseInt((e.target as HTMLInputElement).value) })}
-                onTouchEnd={e => savePatch({ min_salary_nis: parseInt((e.target as HTMLInputElement).value) })}
-                className="w-full" />
-              <div className="flex justify-between text-[12px] num t-dim mt-1">
+              <label className="block">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="t-muted text-[13px]">Minimum monthly salary (NIS)</span>
+                  <span className="num t-ink text-[13px] font-semibold" aria-live="polite">{sliderVal.toLocaleString()}</span>
+                </div>
+                <input type="range" min="10000" max="50000" step="500"
+                  value={sliderVal}
+                  onChange={e => setSliderVal(parseInt(e.target.value))}
+                  onMouseUp={e => savePatch({ min_salary_nis: parseInt((e.target as HTMLInputElement).value) })}
+                  onTouchEnd={e => savePatch({ min_salary_nis: parseInt((e.target as HTMLInputElement).value) })}
+                  aria-label="Minimum monthly salary in NIS"
+                  aria-valuetext={`${sliderVal.toLocaleString()} NIS`}
+                  className="w-full" />
+              </label>
+              <div className="flex justify-between text-[12px] num t-muted mt-1" aria-hidden="true">
                 <span>10K</span><span>30K</span><span>50K</span>
               </div>
             </div>
             <div>
-              <div className="t-muted text-[12px] mb-2">Role focus</div>
-              <div className="flex flex-wrap gap-2">
-                {['Private Banking', 'Fintech BD', 'VC / IR', 'Tech BD'].map(r => (
-                  <button key={r} onClick={() => toggleRole(r)}
-                    className={`px-3 py-1.5 rounded-md border text-[12px] num font-medium transition-colors ${settings.role_focus.includes(r) ? 'bg-ink t-paper' : 'bg-card t-muted b-line hover:bg-soft'}`}
-                    style={{ borderColor: settings.role_focus.includes(r) ? '#1a1815' : '' }}>
-                    {r}
-                  </button>
-                ))}
+              <div className="t-muted text-[13px] mb-2">Role focus</div>
+              <div role="group" aria-label="Role focus" className="flex flex-wrap gap-2">
+                {['Private Banking', 'Fintech BD', 'VC / IR', 'Tech BD'].map(r => {
+                  const active = settings.role_focus.includes(r);
+                  return (
+                    <button type="button" key={r} onClick={() => toggleRole(r)}
+                      aria-pressed={active}
+                      className={`min-h-9 px-3 rounded-md border text-[13px] num font-medium transition-colors ${active ? 'bg-ink t-paper b-ink' : 'bg-card t-muted b-line hover:bg-soft hover:t-ink'}`}>
+                      {r}
+                    </button>
+                  );
+                })}
               </div>
             </div>
             <div>
-              <div className="t-muted text-[12px] mb-2">Geography</div>
-              <div className="flex flex-wrap gap-2">
-                {['Israel', 'Remote EU', 'Remote US', 'Switzerland'].map(g => (
-                  <button key={g} onClick={() => toggleGeo(g)}
-                    className={`px-3 py-1.5 rounded-md border text-[12px] num font-medium transition-colors ${settings.geo.includes(g) ? 'bg-ink t-paper' : 'bg-card t-muted b-line hover:bg-soft'}`}
-                    style={{ borderColor: settings.geo.includes(g) ? '#1a1815' : '' }}>
-                    {g}
-                  </button>
-                ))}
+              <div className="t-muted text-[13px] mb-2">Geography</div>
+              <div role="group" aria-label="Geography" className="flex flex-wrap gap-2">
+                {['Israel', 'Remote EU', 'Remote US', 'Switzerland'].map(g => {
+                  const active = settings.geo.includes(g);
+                  return (
+                    <button type="button" key={g} onClick={() => toggleGeo(g)}
+                      aria-pressed={active}
+                      className={`min-h-9 px-3 rounded-md border text-[13px] num font-medium transition-colors ${active ? 'bg-ink t-paper b-ink' : 'bg-card t-muted b-line hover:bg-soft hover:t-ink'}`}>
+                      {g}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="bg-card border b-line rounded-lg p-5">
+        <section className="bg-card border b-line rounded-lg p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Shield size={14} className="t-brick" />
-            <div className="t-ink text-[14px] font-semibold">Discretion blocklist</div>
-            <div className="t-dim text-[12px] num ml-auto">these never appear in feed</div>
+            <Shield size={15} className="t-brick" aria-hidden="true" />
+            <h3 className="t-ink text-[14px] font-semibold">Discretion blocklist</h3>
+            <div className="t-muted text-[12px] num ml-auto">these never appear in feed</div>
           </div>
-          <div className="flex flex-wrap gap-2 mb-3">
+          <ul className="flex flex-wrap gap-2 mb-3" aria-label="Blocked companies">
             {blocklist.map(b => (
-              <div key={b.id} className="flex items-center gap-1.5 px-2.5 py-1 bg-brick-soft border b-brick-soft rounded-md t-brick text-[12px] num font-medium">
+              <li key={b.id} className="flex items-center gap-1.5 px-2.5 py-1 bg-brick-soft border b-brick-soft rounded-md t-brick text-[13px] num font-medium">
                 <span>{b.pattern}</span>
-                <button onClick={() => removeBlock(b.id)} className="hover:opacity-70"><X size={10} /></button>
-              </div>
+                <button type="button" onClick={() => removeBlock(b.id)} aria-label={`Remove ${b.pattern} from blocklist`} className="hover:opacity-70 inline-flex items-center"><X size={12} aria-hidden="true" /></button>
+              </li>
             ))}
-          </div>
+          </ul>
           <div className="flex gap-2">
             <input value={newBlock} onChange={e => setNewBlock(e.target.value)}
               placeholder="Add company to exclude..."
-              className="flex-1 bg-paper border b-line rounded-md px-3 py-1.5 text-[12px]"
+              aria-label="Add company to blocklist"
+              className="flex-1 bg-paper border b-line rounded-md px-3 py-1.5 text-[13px]"
               onKeyDown={e => { if (e.key === 'Enter') addBlock(); }} />
-            <button onClick={addBlock} className="px-3 py-1.5 rounded-md bg-card border b-line t-ink text-[12px] hover:bg-soft">Add</button>
+            <button type="button" onClick={addBlock} className="min-h-9 px-3 rounded-md bg-card border b-line t-ink text-[13px] hover:bg-soft">Add</button>
           </div>
-        </div>
+        </section>
 
-        <div className="bg-card border b-line rounded-lg p-5">
+        <section className="bg-card border b-line rounded-lg p-5">
           <div className="flex items-center gap-2 mb-3">
-            <FileText size={14} className="t-ink" />
-            <div className="t-ink text-[14px] font-semibold">Master CV</div>
+            <FileText size={15} className="t-ink" aria-hidden="true" />
+            <h3 className="t-ink text-[14px] font-semibold">Master CV</h3>
           </div>
           <div className="flex items-center justify-between p-3 bg-soft border b-line rounded-md">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-md bg-card border b-line flex items-center justify-center">
-                <FileText size={14} className="t-ink" />
+              <div className="w-9 h-9 rounded-md bg-card border b-line flex items-center justify-center" aria-hidden="true">
+                <FileText size={15} className="t-ink" />
               </div>
               <div>
                 <div className="t-ink text-[13px] num font-medium">CV_Nessim_Guez.pdf</div>
-                <div className="t-dim text-[12px] num">attached to every outgoing draft</div>
+                <div className="t-muted text-[12px] num">attached to every outgoing draft</div>
               </div>
             </div>
-            <button className="t-ink text-[12px] num font-semibold hover:underline">Replace</button>
+            <button type="button" className="t-ink text-[13px] num font-semibold hover:underline min-h-9">Replace</button>
           </div>
-        </div>
+        </section>
 
-        <div className="bg-card border b-line rounded-lg p-5">
+        <section className="bg-card border b-line rounded-lg p-5">
           <div className="flex items-center gap-2 mb-3">
-            <RefreshCw size={14} className="t-ink" />
-            <div className="t-ink text-[14px] font-semibold">Sources &amp; refresh</div>
+            <RefreshCw size={15} className="t-ink" aria-hidden="true" />
+            <h3 className="t-ink text-[14px] font-semibold">Sources &amp; refresh</h3>
           </div>
-          <div className="space-y-2 text-[12px]">
+          <ul className="space-y-2 text-[13px]">
             {[
               { name: 'Greenhouse career pages', detail: '20+ companies monitored' },
               { name: 'Lever career pages', detail: '5+ companies monitored' },
               { name: 'LinkedIn Jobs', detail: 'coming soon' },
               { name: 'Drushim / AllJobs', detail: 'coming soon' },
             ].map(s => (
-              <div key={s.name} className="flex items-center justify-between p-2.5 bg-soft border b-line rounded-md">
+              <li key={s.name} className="flex items-center justify-between p-2.5 bg-soft border b-line rounded-md">
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full pulse-dot" style={{ backgroundColor: '#3f5c2e' }} />
+                  <div className="w-1.5 h-1.5 rounded-full pulse-dot" style={{ backgroundColor: 'var(--forest)' }} aria-hidden="true" />
                   <span className="t-ink">{s.name}</span>
                 </div>
-                <div className="t-dim num text-[12px]">{s.detail}</div>
-              </div>
+                <div className="t-muted num text-[12px]">{s.detail}</div>
+              </li>
             ))}
-          </div>
-          <div className="mt-3 text-[12px] t-dim num">Refresh cadence: twice daily (morning + evening)</div>
-        </div>
+          </ul>
+          <div className="mt-3 text-[12px] t-muted num">Refresh cadence: twice daily (morning + evening)</div>
+        </section>
       </div>
     </div>
   );

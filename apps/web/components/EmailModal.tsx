@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Mail, Send, Linkedin, Check, Copy, AlertCircle, Lock, Sparkles, Loader2 } from 'lucide-react';
+import { X, Mail, Send, Linkedin, Check, Copy, AlertCircle, Lock, Sparkles, Loader2, ChevronDown } from 'lucide-react';
 import type { Job, OutreachLog, OutreachMethod } from '@jobness/shared';
 import { copyEmail } from '../lib/signature';
-import { logOutreach } from '../lib/outreach';
+import { logOutreach, lastSentToForCompany } from '../lib/outreach';
+import Modal from './Modal';
 
 type EmailTab = 'cold' | 'warm' | 'linkedin';
 
@@ -28,8 +29,8 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState('');
   const [copied, setCopied]     = useState(false);
+  const [logExpanded, setLogExpanded] = useState(false);
 
-  // Outreach log fields
   const today = new Date().toISOString().split('T')[0]!;
   const [sentTo,      setSentTo]      = useState('');
   const [method,      setMethod]      = useState<OutreachMethod>('email');
@@ -41,10 +42,19 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
     setBody('');
     setContext('');
     setGenError('');
+    setLogExpanded(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, job.id]);
 
-  // sync method default to tab
+  useEffect(() => {
+    let cancelled = false;
+    lastSentToForCompany(job.company).then(prev => {
+      if (!cancelled && prev) setSentTo(prev);
+    });
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [job.id]);
+
   useEffect(() => {
     if (tab === 'linkedin') setMethod('linkedin');
     else setMethod('email');
@@ -87,6 +97,7 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
       body,
     });
     setCopied(true);
+    setLogExpanded(true);
     setTimeout(() => setCopied(false), 1600);
   };
 
@@ -109,194 +120,216 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
   };
 
   const canGenerate = tab !== 'warm' || context.trim().length > 0;
+  const titleId = `email-modal-title-${job.id}`;
+  const hasCopiedOnce = logExpanded;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6 modal-bg"
-      style={{ backgroundColor: 'rgba(26, 24, 21, 0.4)' }}
-      onClick={onClose}
-    >
-      <div
-        className="bg-card border b-line rounded-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col modal-panel shadow-modal"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="p-4 border-b b-line flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-md bg-soft border b-line flex items-center justify-center">
-              <Mail size={14} className="t-ink" />
-            </div>
-            <div>
-              <div className="t-dim num text-[12px] uppercase tracking-wider font-semibold">Draft for</div>
-              <div className="t-ink text-[14px] font-medium">{job.company} — {job.title}</div>
-            </div>
+    <Modal onClose={onClose} labelledBy={titleId} panelClassName="max-w-3xl max-h-[90vh]">
+      <div className="p-4 border-b b-line flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-md bg-soft border b-line flex items-center justify-center shrink-0" aria-hidden="true">
+            <Mail size={14} className="t-ink" aria-hidden="true" />
           </div>
-          <button onClick={onClose} className="btn-ghost p-1.5 rounded"><X size={16} /></button>
+          <div className="min-w-0">
+            <div className="t-muted num text-[11px] uppercase tracking-wider font-semibold">Draft for</div>
+            <h2 id={titleId} className="t-ink text-[14px] font-medium truncate">{job.company} — {job.title}</h2>
+          </div>
         </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded shrink-0"
+        ><X size={16} aria-hidden="true" /></button>
+      </div>
 
-        {/* Tabs */}
-        <div className="flex items-center border-b b-line bg-paper">
-          {([
-            { k: 'cold'     as const, label: 'Cold Apply',  icon: <Send     size={12} /> },
-            { k: 'warm'     as const, label: 'Warm Intro',  icon: <Mail     size={12} /> },
-            { k: 'linkedin' as const, label: 'LinkedIn DM', icon: <Linkedin size={12} /> },
-          ]).map(t => (
-            <button
-              key={t.k}
-              onClick={() => setTab(t.k)}
-              className={`px-4 py-2.5 text-[12px] num flex items-center gap-1.5 border-b-2 transition-colors ${tab === t.k ? 't-ink font-semibold' : 't-muted border-transparent hover:t-ink'}`}
-              style={{ borderBottomColor: tab === t.k ? '#1a1815' : 'transparent' }}
-            >
-              {t.icon} {t.label}
-            </button>
-          ))}
-        </div>
+      <div role="tablist" aria-label="Email type" className="flex items-center border-b b-line bg-paper overflow-x-auto scroll-thin">
+        {([
+          { k: 'cold'     as const, label: 'Cold Apply',  icon: <Send     size={13} aria-hidden="true" /> },
+          { k: 'warm'     as const, label: 'Warm Intro',  icon: <Mail     size={13} aria-hidden="true" /> },
+          { k: 'linkedin' as const, label: 'LinkedIn DM', icon: <Linkedin size={13} aria-hidden="true" /> },
+        ]).map(t => (
+          <button
+            type="button"
+            key={t.k}
+            role="tab"
+            aria-selected={tab === t.k}
+            onClick={() => setTab(t.k)}
+            className={`px-4 py-2.5 text-[13px] num flex items-center gap-1.5 border-b-2 transition-colors shrink-0 ${tab === t.k ? 't-ink font-semibold' : 't-muted border-transparent hover:t-ink'}`}
+            style={{ borderBottomColor: tab === t.k ? 'var(--ink)' : 'transparent' }}
+          >
+            {t.icon} {t.label}
+          </button>
+        ))}
+      </div>
 
-        {/* Body */}
-        <div className="p-4 space-y-3 overflow-y-auto scroll-thin flex-1">
+      <div className="p-4 space-y-3 overflow-y-auto scroll-thin flex-1">
+        {tab !== 'linkedin' && (
+          <label className="block">
+            <span className="block t-muted num text-[11px] uppercase tracking-wider mb-1.5 font-semibold">Subject</span>
+            <input
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              placeholder="Generated with email…"
+              className="w-full bg-paper border b-line rounded-md px-3 py-2 text-[13px] placeholder:t-dim min-h-10"
+            />
+          </label>
+        )}
 
-          {/* Subject (cold + warm only) */}
-          {tab !== 'linkedin' && (
-            <div>
-              <div className="t-dim num text-[12px] uppercase tracking-wider mb-1.5 font-semibold">Subject</div>
-              <input
-                value={subject}
-                onChange={e => setSubject(e.target.value)}
-                placeholder="Generated with email…"
-                className="w-full bg-paper border b-line rounded-md px-3 py-2 text-[13px] placeholder:t-dim"
-              />
-            </div>
-          )}
-
-          {/* Context + Generate */}
-          <div>
-            <div className="t-dim num text-[12px] uppercase tracking-wider mb-1.5 font-semibold">
+        <div>
+          <label className="block">
+            <span className="block t-muted num text-[11px] uppercase tracking-wider mb-1.5 font-semibold">
               {tab === 'warm' ? 'What did they write or do?' : 'Context (optional)'}
-            </div>
+            </span>
             <div className="flex gap-2">
               <input
                 value={context}
                 onChange={e => setContext(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !generating && canGenerate) generate(); }}
                 placeholder={CONTEXT_PLACEHOLDER[tab]}
-                className="flex-1 bg-paper border b-line rounded-md px-3 py-2 text-[13px] placeholder:t-dim"
+                className="flex-1 bg-paper border b-line rounded-md px-3 py-2 text-[13px] placeholder:t-dim min-h-10"
               />
               <button
+                type="button"
                 onClick={generate}
                 disabled={generating || !canGenerate}
-                className="px-3 py-2 rounded-md bg-ink t-paper text-[12px] font-medium flex items-center gap-1.5 disabled:opacity-40 shrink-0"
+                className="min-h-10 px-3 rounded-md bg-ink t-paper text-[13px] font-medium flex items-center gap-1.5 disabled:opacity-40 shrink-0"
               >
                 {generating
-                  ? <><Loader2 size={12} className="animate-spin" /> Writing…</>
-                  : <><Sparkles size={12} /> Generate</>}
+                  ? <><Loader2 size={13} className="animate-spin" aria-hidden="true" /> Writing…</>
+                  : <><Sparkles size={13} aria-hidden="true" /> Generate</>}
               </button>
             </div>
-            {genError && <div className="text-[12px] text-red-500 mt-1">{genError}</div>}
-            {tab === 'warm' && !context.trim() && (
-              <div className="text-[12px] t-dim mt-1">Fill in what they wrote or did to unlock generation.</div>
-            )}
-          </div>
-
-          {/* Email body */}
-          <div>
-            <div className="t-dim num text-[12px] uppercase tracking-wider mb-1.5 font-semibold">
-              {tab === 'linkedin' ? 'Message' : 'Body'}
+          </label>
+          {genError && (
+            <div role="alert" className="text-[12px] t-brick mt-1.5 flex items-center gap-2">
+              <span>{genError}</span>
+              <button type="button" onClick={generate} className="underline hover:no-underline">Try again</button>
             </div>
-            <textarea
-              value={body}
-              onChange={e => setBody(e.target.value)}
-              rows={tab === 'linkedin' ? 7 : 12}
-              placeholder={generating ? '' : 'Click Generate above to draft with AI…'}
-              className="w-full bg-paper border b-line rounded-md px-3 py-2 text-[13px] leading-relaxed resize-none placeholder:t-dim"
-            />
-          </div>
+          )}
+          {tab === 'warm' && !context.trim() && (
+            <div className="text-[12px] t-muted mt-1">Fill in what they wrote or did to unlock generation.</div>
+          )}
+        </div>
 
-          {/* Outreach log */}
-          <div className="border b-line rounded-lg p-3 space-y-2.5 bg-soft">
-            <div className="t-dim num text-[12px] uppercase tracking-wider font-semibold">Log outreach</div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <div className="t-dim num text-[12px] mb-1">Date sent</div>
+        <label className="block">
+          <span className="block t-muted num text-[11px] uppercase tracking-wider mb-1.5 font-semibold">
+            {tab === 'linkedin' ? 'Message' : 'Body'}
+          </span>
+          <textarea
+            value={body}
+            onChange={e => setBody(e.target.value)}
+            rows={tab === 'linkedin' ? 7 : 12}
+            placeholder={generating ? '' : 'Click Generate above to draft with AI…'}
+            className="w-full bg-paper border b-line rounded-md px-3 py-2 text-[13px] leading-relaxed resize-none placeholder:t-dim"
+          />
+        </label>
+
+        {tab === 'cold' && (
+          <div role="note" className="flex items-start gap-2 p-2.5 bg-steel-soft border b-steel-soft rounded-md text-[13px] t-steel">
+            <AlertCircle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
+            <div><span className="font-semibold">Reminder: </span>attach <span className="num font-semibold">CV_Nessim_Guez.pdf</span> in Gmail before sending.</div>
+          </div>
+        )}
+        {!job.fit_note && (
+          <div role="note" className="flex items-start gap-2 p-2.5 bg-brick-soft border b-brick-soft rounded-md text-[13px] t-brick">
+            <AlertCircle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
+            <div><span className="font-semibold">Fit analysis missing</span> — email quality will be lower. Add context above to compensate.</div>
+          </div>
+        )}
+
+        {hasCopiedOnce ? (
+          <section aria-labelledby="log-outreach-heading" className="border b-line rounded-lg p-3 space-y-2.5 bg-soft fade-in">
+            <div className="flex items-center gap-2">
+              <Check size={13} className="t-forest" aria-hidden="true" />
+              <h3 id="log-outreach-heading" className="t-ink num text-[12px] uppercase tracking-wider font-semibold">Log this outreach</h3>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <label className="block">
+                <span className="block t-muted num text-[12px] mb-1">Date sent</span>
                 <input
                   type="date"
                   value={outreachDate}
                   onChange={e => setOutreachDate(e.target.value)}
-                  className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[12px] num"
+                  className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[13px] num min-h-9"
                 />
-              </div>
-              <div>
-                <div className="t-dim num text-[12px] mb-1">Sent to</div>
+              </label>
+              <label className="block">
+                <span className="block t-muted num text-[12px] mb-1">Sent to</span>
                 <input
                   value={sentTo}
                   onChange={e => setSentTo(e.target.value)}
                   placeholder="Name, email, or LinkedIn…"
-                  className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[12px] placeholder:t-dim"
+                  className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[13px] placeholder:t-dim min-h-9"
                 />
-              </div>
+              </label>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
-                <div className="t-dim num text-[12px] mb-1">Via</div>
-                <div className="flex gap-1">
+                <div className="t-muted num text-[12px] mb-1">Via</div>
+                <div role="radiogroup" aria-label="Send method" className="flex gap-1 flex-wrap">
                   {(['email', 'linkedin', 'website'] as OutreachMethod[]).map(m => (
                     <button
+                      type="button"
                       key={m}
+                      role="radio"
+                      aria-checked={method === m}
                       onClick={() => setMethod(m)}
-                      className={`px-2.5 py-1 rounded text-[12px] num font-medium capitalize border transition-colors ${method === m ? 'bg-ink t-paper border-ink' : 'bg-paper b-line t-dim hover:t-ink'}`}
+                      className={`px-2.5 py-1 min-h-8 rounded text-[13px] num font-medium capitalize border transition-colors ${method === m ? 'bg-ink t-paper b-ink' : 'bg-paper b-line t-muted hover:t-ink'}`}
                     >
                       {m}
                     </button>
                   ))}
                 </div>
               </div>
-              <div>
-                <div className="t-dim num text-[12px] mb-1">Follow-up reminder</div>
+              <label className="block">
+                <span className="block t-muted num text-[12px] mb-1">Follow-up reminder</span>
                 <input
                   type="date"
                   value={followUpAt}
                   onChange={e => setFollowUpAt(e.target.value)}
-                  className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[12px] num"
+                  className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[13px] num min-h-9"
                 />
-              </div>
+              </label>
             </div>
-          </div>
+          </section>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setLogExpanded(true)}
+            className="w-full border b-line border-dashed rounded-lg p-2.5 text-[12px] t-muted hover:t-ink hover:bg-soft transition-colors flex items-center justify-center gap-1.5 num"
+          >
+            <ChevronDown size={12} aria-hidden="true" />
+            Log details (shown after you copy)
+          </button>
+        )}
+      </div>
 
-          {!job.fit_note && (
-            <div className="flex items-start gap-2 p-2.5 bg-amber-soft border b-amber-soft rounded-md text-[12px] t-amber">
-              <AlertCircle size={13} className="mt-0.5 shrink-0" />
-              <div><span className="font-semibold">Fit analysis missing</span> — email quality will be lower. Add context above to compensate.</div>
-            </div>
-          )}
-          {tab === 'cold' && (
-            <div className="flex items-start gap-2 p-2.5 bg-steel-soft border b-steel-soft rounded-md text-[12px] t-steel">
-              <AlertCircle size={13} className="mt-0.5 shrink-0" />
-              <div><span className="font-semibold">Reminder: </span>attach <span className="num font-semibold">CV_Nessim_Guez.pdf</span> in Gmail before sending.</div>
-            </div>
-          )}
+      <div className="p-3 border-t b-line flex flex-wrap items-center justify-between gap-2 bg-paper">
+        <div className="flex items-center gap-2 text-[12px] t-muted num">
+          <Lock size={12} aria-hidden="true" /> drafts never leave your browser
         </div>
-
-        {/* Footer */}
-        <div className="p-3 border-t b-line flex items-center justify-between gap-2 bg-paper">
-          <div className="flex items-center gap-2 text-[12px] t-dim num">
-            <Lock size={11} /> drafts never leave your browser
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={copy}
-              disabled={!body}
-              className="px-3 py-1.5 rounded-md bg-card border b-line t-ink text-[12px] flex items-center gap-1.5 hover:border-b-line-strong disabled:opacity-40"
-            >
-              {copied ? <><Check size={12} className="t-forest" /> Copied</> : <><Copy size={12} /> Copy</>}
-            </button>
-            <button
-              onClick={handleMarkApplied}
-              className="btn-primary px-4 py-1.5 rounded-md text-[12px] font-medium flex items-center gap-1.5"
-            >
-              <Check size={12} /> Mark Applied
-            </button>
-          </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={copy}
+            disabled={!body}
+            className={`min-h-9 px-3 rounded-md border text-[13px] flex items-center gap-1.5 disabled:opacity-40 transition-colors ${hasCopiedOnce ? 'bg-card b-line t-muted hover:t-ink' : 'bg-ink t-paper b-ink hover:opacity-90'}`}
+          >
+            {copied ? <><Check size={13} className="t-forest" aria-hidden="true" /> Copied</> : <><Copy size={13} aria-hidden="true" /> Copy</>}
+          </button>
+          <button
+            type="button"
+            onClick={handleMarkApplied}
+            disabled={!hasCopiedOnce}
+            aria-disabled={!hasCopiedOnce}
+            title={hasCopiedOnce ? 'Log this outreach and move to Applied' : 'Copy the email first'}
+            className={`min-h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 border transition-colors ${hasCopiedOnce ? 'bg-forest-soft t-forest b-olive-soft hover:opacity-90' : 'bg-soft t-dim b-line cursor-not-allowed opacity-60'}`}
+          >
+            <Check size={13} aria-hidden="true" /> Mark Applied
+          </button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
