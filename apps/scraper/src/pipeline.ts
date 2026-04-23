@@ -119,7 +119,7 @@ async function scoreAndInsert(
 ): Promise<boolean> {
   try {
     const scoring = await scoreJob(job);
-    if (scoring.score < 40) {
+    if (scoring.score < 50) {
       logger.debug({ ...tag, title: job.title, score: scoring.score }, 'dropped by score');
       return false;
     }
@@ -243,7 +243,24 @@ async function runSource(
   }
 }
 
+let _runInFlight: Promise<void> | null = null;
+
 export async function runAllScrapers(): Promise<void> {
+  if (_runInFlight) {
+    logger.warn('scrape run already in flight — skipping duplicate trigger');
+    return _runInFlight;
+  }
+  _runInFlight = (async () => {
+    try {
+      await _runAllScrapersInner();
+    } finally {
+      _runInFlight = null;
+    }
+  })();
+  return _runInFlight;
+}
+
+async function _runAllScrapersInner(): Promise<void> {
   logger.info('scrape run started');
 
   const db = getSupabase();

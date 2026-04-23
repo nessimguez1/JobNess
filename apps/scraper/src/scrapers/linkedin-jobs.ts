@@ -4,14 +4,16 @@ import { logger } from '../utils/logger.js';
 
 const BASE = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search';
 
+// Queries target Nessim's role profile: BD/partnerships/analyst/fintech-adjacent.
+// Pure SWE titles hit the pipeline's title-drop filter, so don't waste a query on them.
 const QUERIES = [
-  'software engineer',
-  'backend engineer',
-  'fullstack engineer',
-  'python developer',
-  'fintech engineer',
-  'algorithmic trading developer',
-  'quantitative developer',
+  'business development',
+  'strategic partnerships',
+  'account manager fintech',
+  'investor relations',
+  'fintech analyst',
+  'treasury analyst',
+  'solutions engineer fintech',
 ];
 
 const GEO_ID = '101570771';   // Tel Aviv-Yafo metro anchor

@@ -284,7 +284,37 @@ function isGroqTpdExhaustion(err: unknown): boolean {
   return msg.includes('tokens per day') || msg.includes('(tpd)');
 }
 
+// Global concurrency gate — without this, 4 sources × 5 per-source concurrency
+// fires 20 parallel scorer calls, which saturates OpenAI's 200k TPM on gpt-4o-mini.
+const SCORE_GATE_LIMIT = 5;
+let _scoreInFlight = 0;
+const _scoreWaiters: Array<() => void> = [];
+
+async function acquireScoreSlot(): Promise<void> {
+  if (_scoreInFlight < SCORE_GATE_LIMIT) {
+    _scoreInFlight++;
+    return;
+  }
+  await new Promise<void>(resolve => _scoreWaiters.push(resolve));
+  _scoreInFlight++;
+}
+
+function releaseScoreSlot(): void {
+  _scoreInFlight--;
+  const next = _scoreWaiters.shift();
+  if (next) next();
+}
+
 export async function scoreJob(job: ScrapedJob): Promise<Scoring> {
+  await acquireScoreSlot();
+  try {
+    return await _scoreJobInner(job);
+  } finally {
+    releaseScoreSlot();
+  }
+}
+
+async function _scoreJobInner(job: ScrapedJob): Promise<Scoring> {
   if (!_groqDisabledReason) {
     try {
       const scoring = await scoreWithGroq(job);
