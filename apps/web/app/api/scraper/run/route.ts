@@ -15,10 +15,38 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Scraper not configured' }, { status: 503 });
   }
 
-  const upstream = await fetch(`${scraperUrl}/run`, {
-    method: 'POST',
-    headers: { 'x-auth': secret },
-  });
+  const target = `${scraperUrl.replace(/\/$/, '')}/run`;
 
-  return NextResponse.json(await upstream.json(), { status: upstream.status });
+  let upstream: Response;
+  try {
+    upstream = await fetch(target, {
+      method: 'POST',
+      headers: { 'x-auth': secret },
+    });
+  } catch (err) {
+    return NextResponse.json({
+      error: `Network error reaching scraper at ${target}: ${err instanceof Error ? err.message : String(err)}`,
+    }, { status: 502 });
+  }
+
+  const raw = await upstream.text();
+
+  if (!upstream.ok) {
+    if (upstream.status === 401) {
+      return NextResponse.json({
+        error: 'Scraper rejected auth — SCRAPER_SHARED_SECRET on Vercel does not match Railway',
+      }, { status: 401 });
+    }
+    return NextResponse.json({
+      error: `Scraper returned ${upstream.status}: ${raw.slice(0, 200) || '(empty body)'}`,
+    }, { status: upstream.status });
+  }
+
+  try {
+    return NextResponse.json(JSON.parse(raw));
+  } catch {
+    return NextResponse.json({
+      error: `Scraper returned non-JSON body: ${raw.slice(0, 200)}`,
+    }, { status: 502 });
+  }
 }
