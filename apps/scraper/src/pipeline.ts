@@ -35,6 +35,65 @@ function isLocationAllowed(location: string | undefined): boolean {
   return ISRAEL_PASS.some(kw => loc.includes(kw));
 }
 
+// Title pre-filter — drop obvious non-fits BEFORE paying an LLM scoring call.
+// Bare "engineer"/"developer" still pass through so roles like "Finance Engineer"
+// or "Trading Developer" reach the scorer.
+const TITLE_DROP_PATTERNS = [
+  // Wrong discipline — software/infra/data/ML/research/hardware/gaming
+  'software engineer', 'backend engineer', 'back-end engineer', 'back end engineer',
+  'frontend engineer', 'front-end engineer', 'front end engineer',
+  'fullstack engineer', 'full-stack engineer', 'full stack engineer',
+  'mobile engineer', 'ios engineer', 'ios developer',
+  'android engineer', 'android developer',
+  'embedded engineer', 'firmware engineer',
+  'devops engineer', 'sre', 'site reliability',
+  'platform engineer', 'infrastructure engineer', 'cloud engineer',
+  'security engineer', 'security researcher', 'cybersecurity',
+  'qa engineer', 'qa automation', 'test engineer', 'sdet',
+  'data engineer', 'data scientist', 'data analyst',
+  'ml engineer', 'machine learning engineer', 'ai engineer', 'nlp engineer',
+  'research engineer', 'research scientist',
+  'algorithm engineer', 'algorithms engineer',
+  'computer vision',
+  'hardware engineer', 'electrical engineer', 'mechanical engineer',
+  'chip', 'asic', 'fpga', 'silicon',
+  'game developer', 'unity developer', 'unreal developer',
+  // Non-engineering roles
+  'product designer', 'ux designer', 'ui designer', 'graphic designer',
+  'scrum master', 'technical writer',
+  'recruiter', 'talent acquisition', 'hr',
+  'marketing', 'growth marketer', 'content writer', 'copywriter',
+  'customer success', 'customer support', 'support engineer',
+  'intern', 'interns', 'internship', 'student',
+];
+
+// Safety allow-list — these beat the drop list (e.g. Solutions Engineer is sales-adj, not SWE).
+const TITLE_ALLOW_PATTERNS = [
+  'sales engineer',
+  'solutions engineer', 'solution engineer',
+  'solutions architect', 'solution architect',
+  'pre-sales', 'presales',
+  'forward deployed',
+];
+
+function escapeRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+const TITLE_DROP_RE = new RegExp(
+  '\\b(?:' + TITLE_DROP_PATTERNS.map(escapeRe).join('|') + ')\\b',
+  'i',
+);
+const TITLE_ALLOW_RE = new RegExp(
+  '\\b(?:' + TITLE_ALLOW_PATTERNS.map(escapeRe).join('|') + ')\\b',
+  'i',
+);
+
+function isTitleAllowed(title: string): boolean {
+  if (TITLE_ALLOW_RE.test(title)) return true;
+  return !TITLE_DROP_RE.test(title);
+}
+
 function stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined));
 }
@@ -111,8 +170,16 @@ async function runSource(
     // Blocklist filter
     const afterBlocklist = scraped.filter(j => !isBlocked(j.company, blocklistPatterns));
 
+    // Title filter — drop obvious non-fits so we don't waste LLM tokens on them.
+    const afterTitle = afterBlocklist.filter(j => {
+      if (isTitleAllowed(j.title)) return true;
+      logger.debug({ ...tag, title: j.title }, 'filtered by title');
+      return false;
+    });
+    logger.info({ ...tag, kept: afterTitle.length, dropped: afterBlocklist.length - afterTitle.length }, 'after title filter');
+
     // Location filter — only Israel or remote
-    const afterLocation = afterBlocklist.filter(j => {
+    const afterLocation = afterTitle.filter(j => {
       if (isLocationAllowed(j.location)) return true;
       logger.debug({ ...tag, title: j.title, location: j.location }, 'filtered by location');
       return false;
