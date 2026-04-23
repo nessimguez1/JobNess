@@ -70,8 +70,9 @@ async function fetchPage(query: string): Promise<ScrapedJob[]> {
 
   for (const li of root.querySelectorAll('li')) {
     try {
-      const urn = li.getAttribute('data-entity-urn') ?? '';
-      const jobId = urn.split(':').pop();
+      // LinkedIn puts data-entity-urn on the inner .base-card div, not the <li>.
+      const card = li.querySelector('[data-entity-urn]');
+      const urn = card?.getAttribute('data-entity-urn') ?? li.getAttribute('data-entity-urn') ?? '';
 
       const title   = li.querySelector('.base-search-card__title')?.text.trim();
       const company = li.querySelector('.base-search-card__subtitle')?.text.trim();
@@ -83,6 +84,10 @@ async function fetchPage(query: string): Promise<ScrapedJob[]> {
 
       const href   = li.querySelector('a.base-card__full-link')?.getAttribute('href') ?? '';
       const jobUrl = href.split('?')[0];
+
+      // Fallback to the numeric tail of the view URL (…-{id}) if urn is missing.
+      const urlIdMatch = jobUrl?.match(/-(\d+)$/);
+      const jobId = urn.split(':').pop() || urlIdMatch?.[1];
 
       if (!jobId || !title || !company || !jobUrl) continue;
 
