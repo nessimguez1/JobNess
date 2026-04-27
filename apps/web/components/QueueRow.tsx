@@ -23,6 +23,8 @@ interface Props {
   onDraftEmail: (job: Job) => void;
 }
 
+const ACTION_BTN = 'inline-flex items-center justify-center h-8 w-8 rounded transition-colors';
+
 function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, onTrash, onDraftEmail }: Props) {
   const [showFit, setShowFit] = useState(false);
   const status = STATUS_META[job.column_name];
@@ -37,6 +39,8 @@ function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, o
     }
   };
 
+  const stop = (e: React.SyntheticEvent) => e.stopPropagation();
+
   return (
     <article
       data-queue-row
@@ -47,7 +51,7 @@ function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, o
       onClick={() => onOpen(job)}
       onKeyDown={handleKey}
       style={{ animationDelay: `${Math.min(index, 11) * 35}ms` }}
-      className={`group relative bg-card border rounded-lg px-4 py-3 transition-all cursor-pointer row-stagger ${isFocused ? 'b-ink shadow-md' : 'b-line hover:b-line-strong'}`}
+      className={`group relative bg-card border rounded-md px-4 py-2.5 transition-colors cursor-pointer row-stagger ${isFocused ? 'b-ink shadow-md' : 'b-line-strong hover:b-ink'}`}
     >
       <div className="flex items-start gap-3">
         <div
@@ -59,9 +63,9 @@ function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, o
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline gap-2 flex-wrap">
             <h3 className="text-[16px] font-semibold tracking-tight t-ink leading-tight truncate max-w-full">{job.company}</h3>
-            <span className="t-muted text-[11px] num uppercase tracking-wider font-semibold">{status.label}</span>
+            <span className="t-muted text-[10px] num uppercase tracking-[0.08em] font-bold">{status.label}</span>
             {isDueToday && (
-              <span className="inline-flex items-center gap-1 t-brick text-[11px] num uppercase tracking-wider font-bold">
+              <span className="inline-flex items-center gap-1 t-brick text-[10px] num uppercase tracking-[0.08em] font-bold">
                 <Clock size={10} aria-hidden="true" /> due today
               </span>
             )}
@@ -82,14 +86,38 @@ function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, o
                 <Check size={11} aria-hidden="true" />applied {formatRelative(appliedDays)}
               </span>
             )}
+            {job.company_linkedin && (
+              <a
+                href={job.company_linkedin}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${job.company} on LinkedIn`}
+                onClick={stop}
+                className="inline-flex items-center t-muted hover:t-ink"
+              >
+                <Linkedin size={12} aria-hidden="true" />
+              </a>
+            )}
+            {job.company_site && (
+              <a
+                href={job.company_site}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${job.company} website`}
+                onClick={stop}
+                className="inline-flex items-center t-muted hover:t-ink"
+              >
+                <ExternalLink size={12} aria-hidden="true" />
+              </a>
+            )}
           </div>
 
           {job.fit_note && (
             <div className="mt-1.5">
               <button
                 type="button"
-                onClick={e => { e.stopPropagation(); setShowFit(v => !v); }}
-                className="min-h-9 -mx-1 px-1 inline-flex items-center t-muted text-[12px] num underline decoration-dotted underline-offset-2 hover:t-ink"
+                onClick={e => { stop(e); setShowFit(v => !v); }}
+                className="min-h-8 -mx-1 px-1 inline-flex items-center t-muted text-[12px] num underline decoration-dotted underline-offset-2 hover:t-ink"
                 aria-expanded={showFit}
               >
                 {showFit ? 'hide fit' : 'why it fits'}
@@ -97,7 +125,7 @@ function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, o
               {showFit && (
                 <div
                   className="text-[13px] t-muted leading-snug mt-1 pl-3 border-l border-line fade-in"
-                  onClick={e => e.stopPropagation()}
+                  onClick={stop}
                 >
                   {job.fit_note}
                 </div>
@@ -106,61 +134,42 @@ function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, o
           )}
         </div>
 
-        <div className="flex items-start gap-2 shrink-0">
+        <div className="flex flex-col items-end gap-2 shrink-0" onClick={stop} onKeyDown={stop}>
           <div
-            className={`px-2 py-0.5 rounded border text-[13px] num font-bold ${tone.bg} ${tone.border}`}
+            className={`px-2 py-0.5 rounded-sm border text-[13px] num font-bold ${tone.bg} ${tone.border}`}
             aria-label={`Match score ${job.score} out of 100`}
           >
             <span className={tone.text}>{job.score}</span>
           </div>
+
+          <div className="flex items-center gap-0.5 -mr-1.5">
+            {job.column_name === 'inbox' && (
+              <>
+                <button type="button" onClick={() => onMove(job.id, 'interested')} aria-label="Mark interested (i)" className={`${ACTION_BTN} btn-ghost btn-ghost-sage`}><Heart size={14} aria-hidden="true" /></button>
+                <button type="button" onClick={() => onDraftEmail(job)}           aria-label="Draft email (e)"    className={`${ACTION_BTN} btn-ghost`}><Mail size={14} aria-hidden="true" /></button>
+                <button type="button" onClick={() => onMove(job.id, 'applied')}   aria-label="Mark applied (a)"   className={`${ACTION_BTN} btn-ghost btn-ghost-steel`}><Check size={14} aria-hidden="true" /></button>
+                <button type="button" onClick={() => onTrash(job.id)}             aria-label="Archive (x)"        className={`${ACTION_BTN} btn-ghost btn-ghost-brick`}><Trash2 size={14} aria-hidden="true" /></button>
+              </>
+            )}
+            {job.column_name === 'interested' && (
+              <>
+                <button type="button" onClick={() => onDraftEmail(job)}            aria-label="Draft email (e)"   className={`${ACTION_BTN} btn-ghost btn-ghost-steel`}><Send size={14} aria-hidden="true" /></button>
+                <button type="button" onClick={() => onMove(job.id, 'applied')}    aria-label="Mark applied (a)"  className={`${ACTION_BTN} btn-ghost btn-ghost-steel`}><Check size={14} aria-hidden="true" /></button>
+                <button type="button" onClick={() => onMove(job.id, 'inbox')}      aria-label="Back to new"       className={`${ACTION_BTN} btn-ghost`}><RotateCcw size={14} aria-hidden="true" /></button>
+                <button type="button" onClick={() => onTrash(job.id)}              aria-label="Archive (x)"       className={`${ACTION_BTN} btn-ghost btn-ghost-brick`}><Trash2 size={14} aria-hidden="true" /></button>
+              </>
+            )}
+            {job.column_name === 'applied' && (
+              <>
+                <button type="button" onClick={() => onMove(job.id, 'interested')} aria-label="Back to interested" className={`${ACTION_BTN} btn-ghost`}><RotateCcw size={14} aria-hidden="true" /></button>
+                <button type="button" onClick={() => onTrash(job.id)} aria-label="Mark rejected"                    className={`${ACTION_BTN} btn-ghost btn-ghost-brick`}><X size={14} aria-hidden="true" /></button>
+              </>
+            )}
+            {job.column_name === 'archive' && (
+              <button type="button" onClick={() => onMove(job.id, 'inbox')} aria-label="Restore to new" className={`${ACTION_BTN} btn-ghost`}><RotateCcw size={14} aria-hidden="true" /></button>
+            )}
+          </div>
         </div>
-      </div>
-
-      <div
-        className="flex items-center justify-end gap-0.5 mt-2 pt-2 border-t b-line opacity-60 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity"
-        onClick={e => e.stopPropagation()}
-        onKeyDown={e => e.stopPropagation()}
-      >
-        {job.company_linkedin && (
-          <a href={job.company_linkedin} target="_blank" rel="noreferrer" aria-label={`${job.company} on LinkedIn`}
-             className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded">
-            <Linkedin size={13} aria-hidden="true" />
-          </a>
-        )}
-        {job.company_site && (
-          <a href={job.company_site} target="_blank" rel="noreferrer" aria-label={`${job.company} website`}
-             className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded">
-            <ExternalLink size={13} aria-hidden="true" />
-          </a>
-        )}
-
-        <span className="w-px h-5 bg-softer mx-1" aria-hidden="true" />
-
-        {job.column_name === 'inbox' && (
-          <>
-            <button type="button" onClick={() => onMove(job.id, 'interested')} aria-label="Mark interested (i)" className="btn-ghost btn-ghost-sage h-9 w-9 inline-flex items-center justify-center rounded"><Heart size={14} aria-hidden="true" /></button>
-            <button type="button" onClick={() => onDraftEmail(job)}           aria-label="Draft email (e)"    className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded"><Mail size={14} aria-hidden="true" /></button>
-            <button type="button" onClick={() => onMove(job.id, 'applied')}   aria-label="Mark applied (a)"   className="btn-ghost btn-ghost-steel h-9 w-9 inline-flex items-center justify-center rounded"><Check size={14} aria-hidden="true" /></button>
-            <button type="button" onClick={() => onTrash(job.id)}             aria-label="Archive (x)"        className="btn-ghost btn-ghost-brick h-9 w-9 inline-flex items-center justify-center rounded"><Trash2 size={14} aria-hidden="true" /></button>
-          </>
-        )}
-        {job.column_name === 'interested' && (
-          <>
-            <button type="button" onClick={() => onDraftEmail(job)}            aria-label="Draft email (e)"   className="btn-ghost btn-ghost-steel h-9 w-9 inline-flex items-center justify-center rounded"><Send size={14} aria-hidden="true" /></button>
-            <button type="button" onClick={() => onMove(job.id, 'applied')}    aria-label="Mark applied (a)"  className="btn-ghost btn-ghost-steel h-9 w-9 inline-flex items-center justify-center rounded"><Check size={14} aria-hidden="true" /></button>
-            <button type="button" onClick={() => onMove(job.id, 'inbox')}      aria-label="Back to new"       className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded"><RotateCcw size={14} aria-hidden="true" /></button>
-            <button type="button" onClick={() => onTrash(job.id)}              aria-label="Archive (x)"       className="btn-ghost btn-ghost-brick h-9 w-9 inline-flex items-center justify-center rounded"><Trash2 size={14} aria-hidden="true" /></button>
-          </>
-        )}
-        {job.column_name === 'applied' && (
-          <>
-            <button type="button" onClick={() => onMove(job.id, 'interested')} aria-label="Back to interested" className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded"><RotateCcw size={14} aria-hidden="true" /></button>
-            <button type="button" onClick={() => onTrash(job.id)} aria-label="Mark rejected"                    className="btn-ghost btn-ghost-brick h-9 w-9 inline-flex items-center justify-center rounded"><X size={14} aria-hidden="true" /></button>
-          </>
-        )}
-        {job.column_name === 'archive' && (
-          <button type="button" onClick={() => onMove(job.id, 'inbox')} aria-label="Restore to new" className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded"><RotateCcw size={14} aria-hidden="true" /></button>
-        )}
       </div>
     </article>
   );

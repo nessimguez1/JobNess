@@ -432,7 +432,7 @@ export default function Companies() {
     <>
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 className="t-ink text-[24px] sm:text-[28px] font-semibold leading-tight tracking-tight">Companies</h2>
+          <h2 className="t-ink text-[24px] sm:text-[28px] font-bold leading-tight tracking-[-0.025em]">Companies</h2>
           <div className="t-muted text-[13px] num mt-1">
             {companies.length} companies · {withJobsCount} with open jobs
           </div>

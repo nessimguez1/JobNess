@@ -71,7 +71,7 @@ export default function Settings() {
 
   return (
     <div>
-      <h2 className="t-ink text-[24px] sm:text-[28px] font-semibold leading-tight tracking-tight mb-1">Settings</h2>
+      <h2 className="t-ink text-[24px] sm:text-[28px] font-bold leading-tight tracking-[-0.025em] mb-1">Settings</h2>
       <div className="t-muted text-[13px] num mb-5">filters, sources, blocklist, CV</div>
 
       <div className="max-w-3xl space-y-4">

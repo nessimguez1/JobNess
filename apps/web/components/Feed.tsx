@@ -209,7 +209,7 @@ export default function Feed() {
     <>
       <div className="flex items-end justify-between gap-4 mb-6 flex-wrap">
         <div>
-          <h2 className="t-ink text-[24px] sm:text-[28px] font-semibold leading-tight tracking-tight">Queue</h2>
+          <h2 className="t-ink text-[24px] sm:text-[28px] font-bold leading-tight tracking-[-0.025em]">Queue</h2>
           <div className="t-muted text-[13px] num mt-1 flex items-center gap-2 flex-wrap">
             {loading ? 'loading…' : (
               <>

@@ -35,11 +35,11 @@ export default function JobDetailModal({ job, onClose, onDraftEmail, onMove, onT
         </div>
         <div className="flex items-center gap-2">
           <div
-            className={`px-2.5 py-1 rounded-md border num font-semibold ${tone.bg} ${tone.border}`}
+            className={`px-2.5 py-1 rounded-sm border num font-bold ${tone.bg} ${tone.border}`}
             aria-label={`Match score ${job.score} out of 100`}
           >
             <span className={`text-[14px] ${tone.text}`}>{job.score}</span>
-            <span className="t-dim text-[12px]" aria-hidden="true">/100</span>
+            <span className={`text-[12px] ${tone.text} opacity-60`} aria-hidden="true">/100</span>
           </div>
           <button
             type="button"
