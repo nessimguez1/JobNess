@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { X, Mail, Send, Linkedin, Check, Copy, AlertCircle, Lock, Sparkles, Loader2, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Mail, Send, Linkedin, Check, Copy, AlertCircle, Lock, Sparkles, Loader2 } from 'lucide-react';
 import type { Job, OutreachLog, OutreachMethod } from '@jobness/shared';
 import { copyEmail } from '../lib/signature';
 import { logOutreach, lastSentToForCompany } from '../lib/outreach';
@@ -28,8 +28,8 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
   const [body, setBody]         = useState('');
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError] = useState('');
-  const [copied, setCopied]     = useState(false);
-  const [logExpanded, setLogExpanded] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone]         = useState(false);
 
   const today = new Date().toISOString().split('T')[0]!;
   const [sentTo,      setSentTo]      = useState('');
@@ -42,7 +42,6 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
     setBody('');
     setContext('');
     setGenError('');
-    setLogExpanded(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, job.id]);
 
@@ -90,38 +89,61 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
     }
   };
 
-  const copy = async () => {
-    await copyEmail({
-      kind: tab === 'linkedin' ? 'linkedin' : 'email',
-      ...(tab !== 'linkedin' ? { subject } : {}),
-      body,
-    });
-    setCopied(true);
-    setLogExpanded(true);
-    setTimeout(() => setCopied(false), 1600);
+  const copyAndLog = async () => {
+    if (!body || submitting || done) return;
+    setSubmitting(true);
+    try {
+      await copyEmail({
+        kind: tab === 'linkedin' ? 'linkedin' : 'email',
+        ...(tab !== 'linkedin' ? { subject } : {}),
+        body,
+      });
+      const log: OutreachLog = { outreach_method: method, outreach_date: outreachDate };
+      if (sentTo.trim())  log.sent_to      = sentTo.trim();
+      if (followUpAt)     log.follow_up_at = followUpAt;
+      onMarkApplied(job.id, log);
+      await logOutreach({
+        jobId: job.id,
+        type: tab,
+        method,
+        sentAt: outreachDate,
+        ...(sentTo.trim()   ? { sentTo: sentTo.trim() } : {}),
+        ...(followUpAt      ? { followUpAt }           : {}),
+        ...(subject.trim()  ? { subject: subject.trim() } : {}),
+        ...(body.trim()     ? { body: body.trim() }       : {}),
+      });
+      setDone(true);
+      setTimeout(onClose, 700);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleMarkApplied = async () => {
-    const log: OutreachLog = { outreach_method: method, outreach_date: outreachDate };
-    if (sentTo.trim())  log.sent_to      = sentTo.trim();
-    if (followUpAt)     log.follow_up_at = followUpAt;
-    onMarkApplied(job.id, log);
-    await logOutreach({
-      jobId: job.id,
-      type: tab,
-      method,
-      sentAt: outreachDate,
-      ...(sentTo.trim()   ? { sentTo: sentTo.trim() } : {}),
-      ...(followUpAt      ? { followUpAt }           : {}),
-      ...(subject.trim()  ? { subject: subject.trim() } : {}),
-      ...(body.trim()     ? { body: body.trim() }       : {}),
-    });
-    onClose();
-  };
+  // Auto-generate on open / tab change for cold + LinkedIn (warm waits for context).
+  const autoGenFiredFor = useRef<string>('');
+  useEffect(() => {
+    const key = `${job.id}:${tab}`;
+    if (autoGenFiredFor.current === key) return;
+    if (tab !== 'cold' && tab !== 'linkedin') return;
+    autoGenFiredFor.current = key;
+    void generate();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, job.id]);
+
+  // Cmd/Ctrl+Enter triggers the primary action from anywhere in the modal.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        void copyAndLog();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   const canGenerate = tab !== 'warm' || context.trim().length > 0;
   const titleId = `email-modal-title-${job.id}`;
-  const hasCopiedOnce = logExpanded;
 
   return (
     <Modal onClose={onClose} labelledBy={titleId} panelClassName="max-w-3xl max-h-[90vh]">
@@ -239,97 +261,76 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
           </div>
         )}
 
-        {hasCopiedOnce ? (
-          <section aria-labelledby="log-outreach-heading" className="rounded-lg p-3 space-y-2.5 bg-soft fade-in">
-            <div className="flex items-center gap-2">
-              <Check size={13} className="t-forest" aria-hidden="true" />
-              <h3 id="log-outreach-heading" className="t-ink num text-[12px] uppercase tracking-wider font-semibold">Log this outreach</h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <label className="block">
-                <span className="block t-muted num text-[12px] mb-1">Date sent</span>
-                <input
-                  type="date"
-                  value={outreachDate}
-                  onChange={e => setOutreachDate(e.target.value)}
-                  className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[13px] num min-h-9"
-                />
-              </label>
-              <label className="block">
-                <span className="block t-muted num text-[12px] mb-1">Sent to</span>
-                <input
-                  value={sentTo}
-                  onChange={e => setSentTo(e.target.value)}
-                  placeholder="Name, email, or LinkedIn…"
-                  className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[13px] placeholder:t-dim min-h-9"
-                />
-              </label>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <div>
-                <div className="t-muted num text-[12px] mb-1">Via</div>
-                <div role="radiogroup" aria-label="Send method" className="flex gap-1 flex-wrap">
-                  {(['email', 'linkedin', 'website'] as OutreachMethod[]).map(m => (
-                    <button
-                      type="button"
-                      key={m}
-                      role="radio"
-                      aria-checked={method === m}
-                      onClick={() => setMethod(m)}
-                      className={`px-2.5 min-h-9 rounded text-[13px] num font-medium capitalize border transition-colors ${method === m ? 'bg-ink t-paper b-ink' : 'bg-paper b-line t-muted hover:t-ink'}`}
-                    >
-                      {m}
-                    </button>
-                  ))}
-                </div>
+        <section aria-labelledby="log-outreach-heading" className="rounded-lg p-3 space-y-2.5 bg-soft">
+          <h3 id="log-outreach-heading" className="t-muted num text-[11px] uppercase tracking-wider font-semibold">Log this outreach</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <label className="block">
+              <span className="block t-muted num text-[12px] mb-1">Date sent</span>
+              <input
+                type="date"
+                value={outreachDate}
+                onChange={e => setOutreachDate(e.target.value)}
+                className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[13px] num min-h-9"
+              />
+            </label>
+            <label className="block">
+              <span className="block t-muted num text-[12px] mb-1">Sent to</span>
+              <input
+                value={sentTo}
+                onChange={e => setSentTo(e.target.value)}
+                placeholder="Name, email, or LinkedIn…"
+                className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[13px] placeholder:t-dim min-h-9"
+              />
+            </label>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <div className="t-muted num text-[12px] mb-1">Via</div>
+              <div role="radiogroup" aria-label="Send method" className="flex gap-1 flex-wrap">
+                {(['email', 'linkedin', 'website'] as OutreachMethod[]).map(m => (
+                  <button
+                    type="button"
+                    key={m}
+                    role="radio"
+                    aria-checked={method === m}
+                    onClick={() => setMethod(m)}
+                    className={`px-2.5 min-h-9 rounded text-[13px] num font-medium capitalize border transition-colors ${method === m ? 'bg-ink t-paper b-ink' : 'bg-paper b-line t-muted hover:t-ink'}`}
+                  >
+                    {m}
+                  </button>
+                ))}
               </div>
-              <label className="block">
-                <span className="block t-muted num text-[12px] mb-1">Follow-up reminder</span>
-                <input
-                  type="date"
-                  value={followUpAt}
-                  onChange={e => setFollowUpAt(e.target.value)}
-                  className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[13px] num min-h-9"
-                />
-              </label>
             </div>
-          </section>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setLogExpanded(true)}
-            className="w-full border b-line border-dashed rounded-lg p-2.5 text-[12px] t-muted hover:t-ink hover:bg-soft transition-colors flex items-center justify-center gap-1.5 num"
-          >
-            <ChevronDown size={12} aria-hidden="true" />
-            Log details (shown after you copy)
-          </button>
-        )}
+            <label className="block">
+              <span className="block t-muted num text-[12px] mb-1">Follow-up reminder</span>
+              <input
+                type="date"
+                value={followUpAt}
+                onChange={e => setFollowUpAt(e.target.value)}
+                className="w-full bg-paper border b-line rounded-md px-2.5 py-1.5 text-[13px] num min-h-9"
+              />
+            </label>
+          </div>
+        </section>
       </div>
 
       <div className="p-3 border-t b-line flex flex-wrap items-center justify-between gap-2 bg-paper">
         <div className="flex items-center gap-2 text-[12px] t-muted num">
           <Lock size={12} aria-hidden="true" /> drafts never leave your browser
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={copy}
-            disabled={!body}
-            className={`min-h-9 px-3 rounded-md border text-[13px] flex items-center gap-1.5 disabled:opacity-40 transition-colors ${hasCopiedOnce ? 'bg-card b-line t-muted hover:t-ink' : 'bg-ink t-paper b-ink hover:opacity-90'}`}
-          >
-            {copied ? <><Check size={13} className="t-forest" aria-hidden="true" /> Copied</> : <><Copy size={13} aria-hidden="true" /> Copy</>}
-          </button>
-          <button
-            type="button"
-            onClick={handleMarkApplied}
-            disabled={!hasCopiedOnce}
-            aria-disabled={!hasCopiedOnce}
-            title={hasCopiedOnce ? 'Log this outreach and move to Applied' : 'Copy the email first'}
-            className={`min-h-9 px-4 rounded-md text-[13px] font-semibold flex items-center gap-1.5 border transition-colors ${hasCopiedOnce ? 'bg-forest-soft t-forest b-olive-soft hover:opacity-90' : 'bg-soft t-dim b-line cursor-not-allowed opacity-60'}`}
-          >
-            <Check size={13} aria-hidden="true" /> Mark Applied
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={copyAndLog}
+          disabled={!body || submitting || done}
+          title="Copy the draft and log this as applied (Cmd/Ctrl+Enter)"
+          className="btn-primary min-h-10 px-4 rounded-md text-[13px] font-semibold flex items-center gap-2 disabled:opacity-40"
+        >
+          {done
+            ? <><Check size={14} aria-hidden="true" /> Copied &amp; logged</>
+            : submitting
+              ? <><Loader2 size={14} className="animate-spin" aria-hidden="true" /> Logging…</>
+              : <><Copy size={14} aria-hidden="true" /> Copy &amp; log applied</>}
+        </button>
       </div>
     </Modal>
   );
