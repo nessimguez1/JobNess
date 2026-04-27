@@ -1,57 +1,89 @@
 import type { ScrapedJob } from '@jobness/shared';
 import { logger } from '../utils/logger.js';
-import { extractJobPostingsFromHtml, fetchHtml, dedupById } from '../utils/json-ld.js';
+import {
+  extractJobPostingsFromHtml,
+  extractJobsFromAnchors,
+  fetchHtml,
+  dedupById,
+} from '../utils/json-ld.js';
 
-// ─── eFinancialCareers — finance-specialist job board ─────────────────────
+// ─── eFinancialCareers — finance-specialist board ────────────────────────
 //
-// Israel-only queries. Switzerland, UK, Singapore are excluded by Nessim's
-// geo filter — don't pollute the queue with hard-fails.
+// Israel-only queries. Job detail URLs follow:
+//   /jobs-Israel-{City}-{Title}.id{NumericID}
+// Search results page: /search?location=Israel&q={keyword}
+// Also: /jobs/remote/in-israel for remote-Israel listings.
 
 const BASE = 'https://www.efinancialcareers.com';
+const JOB_LINK_RE = /\/jobs-[A-Za-z_-]+\.id\d+/;
 
-// Israel-specific URL paths — eFC uses a /jobs-{Country}/{Role} convention.
-const ISRAEL_ROLES = [
-  'Relationship_Manager',
-  'Private_Banker',
-  'Wealth_Manager',
-  'Family_Office',
-  'Investment_Advisor',
-  'Investor_Relations',
-  'Business_Development',
-  'Account_Manager',
-  'Financial_Analyst',
-  'Treasury_Analyst',
+const QUERIES = [
+  'relationship manager',
+  'private banker',
+  'wealth manager',
+  'family office',
+  'investment advisor',
+  'investor relations',
+  'business development',
+  'account manager',
+  'financial analyst',
+  'treasury',
+  'partnerships',
 ];
 
-function israelUrl(role: string, page: number): string {
-  return `${BASE}/jobs-Israel/${role}?page=${page}`;
+function israelSearchUrl(query: string, page: number): string {
+  const params = new URLSearchParams({ q: query, location: 'Israel', page: String(page) });
+  return `${BASE}/search?${params}`;
 }
 
-async function fetchRole(role: string): Promise<ScrapedJob[]> {
+const REMOTE_ISRAEL_URL = `${BASE}/jobs/remote/in-israel`;
+
+async function fetchPage(url: string): Promise<ScrapedJob[]> {
+  const html = await fetchHtml(url, 14_000);
+  if (!html) return [];
+  const ld = extractJobPostingsFromHtml(html, 'eFinancialCareers', url);
+  if (ld.length > 0) return ld;
+  return extractJobsFromAnchors(html, {
+    source: 'eFinancialCareers',
+    baseUrl: BASE,
+    linkPattern: JOB_LINK_RE,
+    defaultLocation: 'Israel',
+  });
+}
+
+async function fetchQuery(query: string): Promise<ScrapedJob[]> {
   const out: ScrapedJob[] = [];
-  for (let page = 1; page <= 3; page++) {
-    const url = israelUrl(role, page);
-    const html = await fetchHtml(url, 14_000);
-    if (!html) break;
-    const jobs = extractJobPostingsFromHtml(html, 'eFinancialCareers', url);
+  for (let page = 1; page <= 2; page++) {
+    const jobs = await fetchPage(israelSearchUrl(query, page));
     if (jobs.length === 0) break;
     out.push(...jobs);
-    // Polite pacing — eFC is sensitive to bursts
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise(r => setTimeout(r, 1200)); // polite pacing
   }
   return out;
 }
 
 export async function run(): Promise<ScrapedJob[]> {
   const all: ScrapedJob[] = [];
-  for (const role of ISRAEL_ROLES) {
+
+  // Per-keyword Israel-targeted searches
+  for (const query of QUERIES) {
     try {
-      const jobs = await fetchRole(role);
-      logger.info({ role, count: jobs.length }, 'efinancialcareers role');
+      const jobs = await fetchQuery(query);
+      logger.info({ query, count: jobs.length }, 'efinancialcareers query');
       all.push(...jobs);
     } catch (err) {
-      logger.warn({ role, err: String(err) }, 'efinancialcareers role failed');
+      logger.warn({ query, err: String(err) }, 'efinancialcareers query failed');
     }
   }
+
+  // Plus the remote-Israel landing page (no keyword filter)
+  try {
+    const remote = await fetchPage(REMOTE_ISRAEL_URL);
+    logger.info({ count: remote.length }, 'efinancialcareers remote-israel');
+    all.push(...remote);
+  } catch (err) {
+    logger.warn({ err: String(err) }, 'efinancialcareers remote-israel failed');
+  }
+
   return dedupById(all);
 }

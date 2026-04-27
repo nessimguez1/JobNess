@@ -1,29 +1,31 @@
 import type { ScrapedJob } from '@jobness/shared';
 import { logger } from '../utils/logger.js';
-import { extractJobPostingsFromHtml, fetchHtml, dedupById } from '../utils/json-ld.js';
+import {
+  extractJobPostingsFromHtml,
+  extractJobsFromAnchors,
+  fetchHtml,
+  dedupById,
+} from '../utils/json-ld.js';
 
-// ─── AllJobs (alljobs.co.il) — Israel's broadest job board ─────────────────
+// ─── AllJobs (alljobs.co.il) — Israel's broadest job board ────────────────
 //
-// Strategy:
-//   1. Hit each search URL (English + Hebrew queries targeting Nessim's lane)
-//   2. Parse JSON-LD JobPosting blocks (.NET / SEO-tooled sites usually have them)
-//   3. Fallback: anchor-pattern extraction from HTML
-//
-// AllJobs is a .NET ASP page under heavy client-side rendering, so JSON-LD
-// is more reliable than DOM scraping. If the JSON-LD path returns 0 we log
-// and move on rather than fabricating.
+// ASP.NET site. Real search endpoint: /SearchResultsGuest.aspx
+// (Default.aspx returns a 404). Job-detail anchors look like:
+//   /jobs/PositionDetailsAccount.aspx?PositionId={ID}
+//   /jobs/PositionDetailsGuest.aspx?PositionId={ID}
+// We accept either pattern.
 
 const BASE = 'https://www.alljobs.co.il';
+const JOB_LINK_RE = /\/jobs\/PositionDetails(Account|Guest)\.aspx\?PositionId=\d+/i;
 
-// Hebrew-first queries (the board is primarily Hebrew).
 const QUERIES = [
-  'פיתוח עסקי',           // business development
-  'מנהל לקוחות',          // account manager
-  'שותפויות',              // partnerships
-  'יועץ השקעות',          // investment advisor
-  'מנהל קשרי לקוחות',    // relationship manager
-  'אנליסט',                // analyst
-  'יועץ לקוחות',           // client advisor
+  'פיתוח עסקי',
+  'מנהל לקוחות',
+  'שותפויות',
+  'יועץ השקעות',
+  'מנהל קשרי לקוחות',
+  'אנליסט',
+  'יועץ לקוחות',
   'business development',
   'partnerships',
   'account manager',
@@ -32,13 +34,8 @@ const QUERIES = [
 ];
 
 function searchUrl(query: string, page: number): string {
-  // The /Search/Default.aspx endpoint takes Region (TLV cluster) + Type=BD/Sales.
-  // We build broad queries; the title/location filter happens downstream.
-  const params = new URLSearchParams({
-    page: String(page),
-    freetext: query,
-  });
-  return `${BASE}/Search/Default.aspx?${params}`;
+  const params = new URLSearchParams({ page: String(page), freetext: query });
+  return `${BASE}/SearchResultsGuest.aspx?${params}`;
 }
 
 async function fetchQuery(query: string): Promise<ScrapedJob[]> {
@@ -47,9 +44,16 @@ async function fetchQuery(query: string): Promise<ScrapedJob[]> {
     const url = searchUrl(query, page);
     const html = await fetchHtml(url);
     if (!html) break;
-    const jobs = extractJobPostingsFromHtml(html, 'AllJobs', url);
-    if (jobs.length === 0) break;
-    out.push(...jobs);
+
+    const ld = extractJobPostingsFromHtml(html, 'AllJobs', url);
+    const anchors = extractJobsFromAnchors(html, {
+      source: 'AllJobs',
+      baseUrl: BASE,
+      linkPattern: JOB_LINK_RE,
+    });
+    const merged = dedupById([...ld, ...anchors]);
+    if (merged.length === 0) break;
+    out.push(...merged);
   }
   return out;
 }

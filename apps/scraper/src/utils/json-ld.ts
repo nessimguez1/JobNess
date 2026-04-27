@@ -137,15 +137,25 @@ function jobPostingToScrapedJob(j: JobPostingLD, source: JobSource, fallbackUrl:
   return job;
 }
 
-/** Standard fetch with timeout + UA. Used by all HTML-scrape scrapers. */
+// Real Chrome UA — many Israeli sites block the obvious "JobNess/1.0" UA
+// with a generic 403 or empty result page. This matches a current Chrome
+// build closely enough to pass naive bot filters.
+const BROWSER_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
+
+const BROWSER_HEADERS = {
+  'User-Agent': BROWSER_UA,
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9,he;q=0.8,fr;q=0.7',
+  'Accept-Encoding': 'gzip, deflate, br',
+};
+
+/** Standard fetch with timeout + browser UA. Used by all HTML-scrape scrapers. */
 export async function fetchHtml(url: string, timeoutMs = 12_000): Promise<string | null> {
   try {
     const res = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; JobNess/1.0; +https://jobness.app)',
-        Accept: 'text/html,application/xhtml+xml',
-      },
+      headers: BROWSER_HEADERS,
       signal: AbortSignal.timeout(timeoutMs),
+      redirect: 'follow',
     });
     if (!res.ok) return null;
     return await res.text();
@@ -164,4 +174,68 @@ export function dedupById(jobs: ScrapedJob[]): ScrapedJob[] {
     out.push(j);
   }
   return out;
+}
+
+// ─── HTML anchor-pattern extractor ───────────────────────────────────────
+//
+// For sites that don't expose JSON-LD JobPosting microdata (most Israeli
+// boards: JobMaster, AllJobs, etc.) we extract the visible <a> tag text
+// pointing at job-detail URLs. The title alone is enough for the LLM
+// scorer to triage; the user clicks through to the URL for full context.
+//
+// `linkPattern` is a regex that matches the relative or absolute URL of
+// a job detail page. The captured anchor's inner text is treated as the
+// title.
+
+interface AnchorJobOptions {
+  source: JobSource;
+  baseUrl: string;
+  /** Regex matching the href of a job-detail link. Should have one capture group: the captured href. */
+  linkPattern: RegExp;
+  /** Default company name when not extractable from the page. */
+  defaultCompany?: string;
+  /** Default location when not extractable. */
+  defaultLocation?: string;
+}
+
+export function extractJobsFromAnchors(html: string, opts: AnchorJobOptions): ScrapedJob[] {
+  const { source, baseUrl, linkPattern, defaultCompany = 'Unknown', defaultLocation = 'Israel' } = opts;
+  // Match <a ... href="..."> ... </a> where href satisfies linkPattern
+  const anchorRe = /<a\b[^>]*?href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  const out: ScrapedJob[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = anchorRe.exec(html)) !== null) {
+    const href = m[1];
+    const inner = m[2];
+    if (!href || !inner) continue;
+    if (!linkPattern.test(href)) continue;
+
+    // Extract visible text (strip nested tags + collapse whitespace)
+    const title = inner
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&#x?[0-9a-f]+;/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (!title || title.length < 3 || title.length > 200) continue;
+
+    const fullUrl = href.startsWith('http')
+      ? href
+      : href.startsWith('/')
+        ? new URL(href, baseUrl).toString()
+        : new URL(`/${href}`, baseUrl).toString();
+
+    out.push({
+      id: jobId(defaultCompany, title, defaultLocation),
+      title,
+      company: defaultCompany,
+      mono: mono(defaultCompany),
+      location: defaultLocation,
+      source,
+      url: fullUrl,
+    });
+  }
+  return dedupById(out);
 }
