@@ -287,7 +287,7 @@ function CompanyCard({ company, onDraft, onTogglePin }: {
           <span className="text-[13px] t-ink font-semibold num">{company.mono ?? genMono(company.name)}</span>
         </div>
         <div className="min-w-0 flex-1">
-          <div className="font-serif-display t-ink leading-tight truncate text-[17px]">{company.name}</div>
+          <div className="text-[16px] font-semibold tracking-tight t-ink leading-tight truncate">{company.name}</div>
           <div className="t-muted text-[12px] num mt-0.5 flex items-center gap-1.5">
             {company.sector && <span className="truncate">{company.sector}</span>}
             {company.ats === 'custom' && (

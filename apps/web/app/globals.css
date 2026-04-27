@@ -52,7 +52,6 @@
 * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 .num { font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
-.font-serif-display { font-family: var(--font-serif), Georgia, "Times New Roman", serif; letter-spacing: -0.015em; }
 
 .bg-paper  { background-color: var(--paper); }
 .bg-card   { background-color: var(--card); }
@@ -160,24 +159,6 @@ input, textarea, select {
   background: var(--card);
 }
 input[type="range"] { accent-color: var(--ink); }
-
-.paper-texture {
-  position: relative;
-}
-.paper-texture::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.35;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  mix-blend-mode: multiply;
-}
-.paper-texture > * {
-  position: relative;
-  z-index: 1;
-}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

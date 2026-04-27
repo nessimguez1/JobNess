@@ -73,14 +73,14 @@ export default function Terminal() {
   const ActiveIcon = TABS.find(t => t.k === activeTab)?.icon ?? Inbox;
 
   return (
-    <div className="bg-paper t-ink min-h-screen paper-texture">
+    <div className="bg-paper t-ink min-h-screen">
       <header className="border-b b-line-strong bg-paper sticky top-0 z-30">
         <div className="px-4 sm:px-5 py-3 flex items-center gap-3 sm:gap-5 flex-wrap">
           <div className="flex items-center gap-2.5 shrink-0">
             <div className="w-8 h-8 rounded-md bg-ink flex items-center justify-center shrink-0" aria-hidden="true">
               <span className="t-paper text-[15px] font-bold tracking-tight">J</span>
             </div>
-            <span className="font-serif-display text-[20px] t-ink leading-none">JobNess</span>
+            <span className="text-[20px] font-bold tracking-[-0.02em] t-ink leading-none">JobNess</span>
           </div>
 
           <label className="sm:hidden relative flex-1 min-w-[160px]">

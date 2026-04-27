@@ -63,7 +63,7 @@ export default function ShortcutOverlay() {
   return (
     <Modal onClose={() => setOpen(false)} labelledBy="shortcut-title" panelClassName="max-w-lg max-h-[80vh]">
       <div className="p-4 border-b b-line flex items-center justify-between">
-        <h2 id="shortcut-title" className="font-serif-display text-[20px] t-ink">Keyboard shortcuts</h2>
+        <h2 id="shortcut-title" className="text-[20px] font-bold tracking-tight t-ink">Keyboard shortcuts</h2>
         <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded">
           <X size={16} aria-hidden="true" />
         </button>

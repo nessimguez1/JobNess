@@ -36,8 +36,7 @@ const config: Config = {
         'avatar-6':      'var(--avatar-6)',
       },
       fontFamily: {
-        sans:  ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
-        serif: ['var(--font-serif)', 'Georgia', 'Times New Roman', 'serif'],
+        sans: ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
       },
     },
   },

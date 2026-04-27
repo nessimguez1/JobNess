@@ -26,28 +26,29 @@ Success looks like: Nessim opens it daily, the top of the queue is signal, the b
 
 ## Brand Personality
 
-**Modern minimal, quiet, professional.** Lineage: Things 3 and Reeder — calm productivity, single-user reverence, generous typography, deliberate restraint. The paper-and-ink visual identity (warm off-white surface, ink-near-black type, earth-tone accents) is a quiet rejection of generic SaaS, not a maximalist editorial statement.
+**Modern digital, calm, professional.** Lineage: Linear, Things 3, Plain, Resend's product surfaces — confident sans typography, decisive color, restrained motion, single-user reverence. The five-color palette (Daybreak Cream / Hearth Ink / Moss / Solar Amber / Coastal Blue) is a deliberate rejection of generic SaaS purple gradients on one side and crypto/web3 neon on the other.
 
-Voice: direct, low-stakes, never gamified. Microcopy should sound like a notebook talking to its owner, not a product onboarding a user. No encouragement language, no streaks, no badges, no celebratory toasts. A score of 92 is shown; it is not announced.
+Voice: direct, low-stakes, never gamified. Microcopy should sound like a tool that knows its job, not a product that's trying to get adopted. No encouragement language, no streaks, no badges, no celebratory toasts. A score of 92 is shown; it is not announced.
 
 ## Anti-references
 
 - **LinkedIn / Indeed style.** Busy, ad-laden, recruiter-shaped UX, social-network noise, "people you may know," skill endorsements, premium upsells. JobNess is the antidote: no engagement bait, no algorithm guessing what he wants next, no notifications.
-- **Crypto / fintech-bro neon dark mode.** Glow effects, animated gradients, big-number-small-label hero metrics, neon-on-black palette. JobNess is paper, not phosphor.
-- **Generic SaaS dashboard.** Identical card grids, gradient text, purple accents, AI-slop polish. JobNess earns its visual character from typography and palette, not from chrome.
-- **Productivity gamification.** Kanban apps with confetti, dopamine triggers, completion percentages. JobNess respects that this is a serious, sometimes anxious activity; it does not make it feel like a game.
+- **Web3 / crypto neon.** Glow effects, animated gradients, glassmorphism, neon-on-black palettes, "cybernetic" wireframe aesthetics. JobNess is a working tool, not a launch site for a token.
+- **Editorial / paper-feel skeuomorphism.** Faux paper textures, serif "stamp" headlines, hand-set typography. The surface is a digital surface; it should not pretend to be vellum.
+- **Generic SaaS dashboard.** Identical card grids, gradient text, purple accents, hero-metric template, AI-slop polish. JobNess earns its visual character from palette and hierarchy, not from chrome.
+- **Productivity gamification.** Confetti, dopamine triggers, streaks, completion percentages, celebratory animations. JobNess respects that this is a serious, sometimes anxious activity; it does not make it feel like a game.
 
 ## Design Principles
 
-1. **Operator first, always.** Nessim built this for himself. Every choice — keyboard-first navigation (`g`+`f/c/o/s`, `?` for shortcuts), tab semantics, density, the absence of any marketing copy — should feel like a tool a serious operator made for his own use. Decoration only earns a place if it makes the tool quieter or faster.
+1. **Operator first, always.** Nessim built this for himself. Every choice — inline row actions (Heart, Mail, Applied, Trash), keyboard-first navigation (`g`+`f/c/o/s`, `?` for shortcuts), density, the absence of any marketing copy — should feel like a tool a serious operator made for his own use. Decoration only earns a place if it makes the tool quieter or faster.
 
-2. **Quiet is a feature.** The rest of his job-hunting day is loud — recruiter spam, LinkedIn ads, anxiety. JobNess should feel like opening a clean notebook. No streaks, no progress meters, no engagement loops, no celebratory animations. State changes are observed, not announced.
+2. **Quiet is a feature.** The rest of his job-hunting day is loud — recruiter spam, LinkedIn ads, anxiety. JobNess should feel like a clean working surface. No streaks, no progress meters, no engagement loops, no celebratory animations. State changes are observed, not announced.
 
-3. **Trust the typography.** Hanken Grotesk and Source Serif 4 carry the hierarchy. Scale and weight contrast do the work; chrome, color, and shadow do not. Tabular numerics on everything countable (scores, salaries, dates). The serif is reserved for the brand mark and display moments — never body.
+3. **Trust the typography.** Hanken Grotesk carries the entire hierarchy in one family. Scale and weight contrast do the work; chrome, color, and shadow do not. Tabular numerics on everything countable (scores, salaries, dates).
 
 4. **Restraint over completeness.** Fewer things, better. The Kanban columns, the score, the fit note, the outreach draft — that is the whole game. Resist the urge to add charts, graphs, secondary metrics, or "insights." If a feature does not change a swipe decision, it does not belong.
 
-5. **Paper, not phosphor.** The warm off-white surface (`--paper`) and ink-near-black text (`--ink`) are the identity. Earth-tone accents — forest, brick, steel — appear sparingly to mark category or column, never to "pop" or to grab attention. Never neon, never gradient text, never glow, never dark mode by default.
+5. **Five colors, used decisively.** Daybreak Cream is the surface. Hearth Ink is the text and the selection inversion. Moss marks "interested" and high-fit scores. Coastal Blue marks "applied." Solar Amber marks "due today" and destructive actions. No sixth color. No drift. Filled accents over soft tints when something needs to stand out.
 
 ## Accessibility & Inclusion
 

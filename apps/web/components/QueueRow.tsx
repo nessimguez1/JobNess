@@ -58,7 +58,7 @@ function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, o
 
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline gap-2 flex-wrap">
-            <h3 className="font-serif-display text-[17px] t-ink leading-tight truncate max-w-full">{job.company}</h3>
+            <h3 className="text-[16px] font-semibold tracking-tight t-ink leading-tight truncate max-w-full">{job.company}</h3>
             <span className="t-muted text-[11px] num uppercase tracking-wider font-semibold">{status.label}</span>
             {isDueToday && (
               <span className="inline-flex items-center gap-1 t-brick text-[11px] num uppercase tracking-wider font-bold">
@@ -96,13 +96,9 @@ function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, o
               </button>
               {showFit && (
                 <div
-                  className="text-[13px] t-muted leading-snug mt-1 pl-3 relative fade-in"
+                  className="text-[13px] t-muted leading-snug mt-1 pl-3 border-l border-line fade-in"
                   onClick={e => e.stopPropagation()}
                 >
-                  <span
-                    aria-hidden="true"
-                    className="absolute left-0 top-0 text-[15px] leading-none t-dim font-serif-display"
-                  >“</span>
                   {job.fit_note}
                 </div>
               )}
@@ -144,14 +140,16 @@ function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, o
           <>
             <button type="button" onClick={() => onMove(job.id, 'interested')} aria-label="Mark interested (i)" className="btn-ghost btn-ghost-sage h-9 w-9 inline-flex items-center justify-center rounded"><Heart size={14} aria-hidden="true" /></button>
             <button type="button" onClick={() => onDraftEmail(job)}           aria-label="Draft email (e)"    className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded"><Mail size={14} aria-hidden="true" /></button>
+            <button type="button" onClick={() => onMove(job.id, 'applied')}   aria-label="Mark applied (a)"   className="btn-ghost btn-ghost-steel h-9 w-9 inline-flex items-center justify-center rounded"><Check size={14} aria-hidden="true" /></button>
             <button type="button" onClick={() => onTrash(job.id)}             aria-label="Archive (x)"        className="btn-ghost btn-ghost-brick h-9 w-9 inline-flex items-center justify-center rounded"><Trash2 size={14} aria-hidden="true" /></button>
           </>
         )}
         {job.column_name === 'interested' && (
           <>
-            <button type="button" onClick={() => onDraftEmail(job)} aria-label="Draft email (e)"     className="btn-ghost btn-ghost-steel h-9 w-9 inline-flex items-center justify-center rounded"><Send size={14} aria-hidden="true" /></button>
-            <button type="button" onClick={() => onMove(job.id, 'inbox')} aria-label="Back to new"    className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded"><RotateCcw size={14} aria-hidden="true" /></button>
-            <button type="button" onClick={() => onTrash(job.id)} aria-label="Archive (x)"            className="btn-ghost btn-ghost-brick h-9 w-9 inline-flex items-center justify-center rounded"><Trash2 size={14} aria-hidden="true" /></button>
+            <button type="button" onClick={() => onDraftEmail(job)}            aria-label="Draft email (e)"   className="btn-ghost btn-ghost-steel h-9 w-9 inline-flex items-center justify-center rounded"><Send size={14} aria-hidden="true" /></button>
+            <button type="button" onClick={() => onMove(job.id, 'applied')}    aria-label="Mark applied (a)"  className="btn-ghost btn-ghost-steel h-9 w-9 inline-flex items-center justify-center rounded"><Check size={14} aria-hidden="true" /></button>
+            <button type="button" onClick={() => onMove(job.id, 'inbox')}      aria-label="Back to new"       className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded"><RotateCcw size={14} aria-hidden="true" /></button>
+            <button type="button" onClick={() => onTrash(job.id)}              aria-label="Archive (x)"       className="btn-ghost btn-ghost-brick h-9 w-9 inline-flex items-center justify-center rounded"><Trash2 size={14} aria-hidden="true" /></button>
           </>
         )}
         {job.column_name === 'applied' && (

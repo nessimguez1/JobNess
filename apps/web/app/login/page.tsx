@@ -32,14 +32,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="bg-paper min-h-screen flex items-center justify-center paper-texture p-4">
+    <div className="bg-paper min-h-screen flex items-center justify-center p-4">
       <div className="bg-card border b-line rounded-xl p-8 w-full max-w-sm shadow-modal">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-md bg-ink flex items-center justify-center" aria-hidden="true">
-            <span className="t-paper text-[18px] font-semibold num">J</span>
+            <span className="t-paper text-[18px] font-bold num">J</span>
           </div>
           <div>
-            <h1 className="font-serif-display t-ink text-[20px] leading-none">JobNess</h1>
+            <h1 className="t-ink text-[22px] font-bold tracking-[-0.02em] leading-none">JobNess</h1>
             <div className="num t-muted text-[11px] uppercase tracking-widest mt-1 font-semibold">terminal · private · v0.2</div>
           </div>
         </div>
