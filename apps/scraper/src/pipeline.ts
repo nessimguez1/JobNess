@@ -5,6 +5,10 @@ import { run as runLinkedInJobs } from './scrapers/linkedin-jobs.js';
 import { run as runLinkedInPosts } from './scrapers/linkedin-posts.js';
 import { run as runDrushim } from './scrapers/drushim.js';
 import { run as runEFinancialCareers } from './scrapers/efinancialcareers.js';
+import { run as runAllJobs } from './scrapers/alljobs.js';
+import { run as runGlobes } from './scrapers/globes.js';
+import { run as runTheMarker } from './scrapers/themarker.js';
+import { run as runJobMaster } from './scrapers/jobmaster.js';
 import { scoreJob } from './scorer.js';
 import { parseSalaryNIS } from './utils/fx.js';
 import { logger } from './utils/logger.js';
@@ -317,6 +321,10 @@ async function _runAllScrapersInner(): Promise<void> {
     runSource('CareerPage',        runCareerPages,       patterns, minSalary),
     runSource('Drushim',           runDrushim,           patterns, minSalary),
     runSource('eFinancialCareers', runEFinancialCareers, patterns, minSalary),
+    runSource('AllJobs',           runAllJobs,           patterns, minSalary),
+    runSource('Globes',            runGlobes,            patterns, minSalary),
+    runSource('TheMarker',         runTheMarker,         patterns, minSalary),
+    runSource('JobMaster',         runJobMaster,         patterns, minSalary),
   ]);
 
   // Refresh per-company job counts so the Companies page is in sync.
