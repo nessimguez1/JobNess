@@ -28,6 +28,9 @@ pnpm-debug.log*
 .idea/
 *.swp
 
+# Claude Code per-user permissions (project skills/agents are committed)
+.claude/settings.local.json
+
 # playwright
 playwright-report/
 test-results/
