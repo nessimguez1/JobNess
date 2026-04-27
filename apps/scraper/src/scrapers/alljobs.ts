@@ -42,7 +42,8 @@ async function fetchQuery(query: string): Promise<ScrapedJob[]> {
   const out: ScrapedJob[] = [];
   for (let page = 1; page <= 2; page++) {
     const url = searchUrl(query, page);
-    const html = await fetchHtml(url);
+    // AllJobs is slow — needs >12s default timeout
+    const html = await fetchHtml(url, 30_000);
     if (!html) break;
 
     const ld = extractJobPostingsFromHtml(html, 'AllJobs', url);

@@ -23,6 +23,10 @@ function tag(sector: CompanySector, entries: RawEntry[]): CareerPageTarget[] {
   return entries.map(e => ({ ...e, sector }));
 }
 
+// Verified Greenhouse boards only. Slugs that 404'd in production (Lemonade,
+// Hippo, Tipalti, Rapyd, Papaya Global, Nayax, BlueVine, Earnix, Justt, eToro)
+// were removed — those companies are on different ATS systems (Workday,
+// Comeet, custom) and need dedicated scrapers, not Greenhouse guesses.
 const ISRAELI_FINTECH: RawEntry[] = [
   { company: 'Melio',          slug: 'melio',          ats: 'greenhouse', website: 'https://meliopayments.com' },
   { company: 'Payoneer',       slug: 'payoneer',       ats: 'greenhouse', website: 'https://payoneer.com' },
@@ -33,18 +37,12 @@ const ISRAELI_FINTECH: RawEntry[] = [
   { company: 'Pontera',        slug: 'pontera',        ats: 'greenhouse', website: 'https://pontera.com' },
   { company: 'Capitolis',      slug: 'capitolis',      ats: 'greenhouse', website: 'https://capitolis.com' },
   { company: 'Forter',         slug: 'forter',         ats: 'greenhouse', website: 'https://forter.com' },
-  { company: 'Lemonade',       slug: 'lemonade',       ats: 'greenhouse', website: 'https://lemonade.com' },
-  { company: 'Hippo',          slug: 'hippo',          ats: 'greenhouse', website: 'https://hippo.com' },
-  { company: 'Tipalti',        slug: 'tipalti',        ats: 'greenhouse', website: 'https://tipalti.com' },
-  { company: 'Rapyd',          slug: 'rapyd',          ats: 'greenhouse', website: 'https://rapyd.net' },
-  { company: 'Papaya Global',  slug: 'papayaglobal',   ats: 'greenhouse', website: 'https://papayaglobal.com' },
-  { company: 'Nayax',          slug: 'nayax',          ats: 'greenhouse', website: 'https://nayax.com' },
-  { company: 'BlueVine',       slug: 'bluevine',       ats: 'greenhouse', website: 'https://bluevine.com' },
-  { company: 'Earnix',         slug: 'earnix',         ats: 'greenhouse', website: 'https://earnix.com' },
-  { company: 'Justt',          slug: 'justt',          ats: 'greenhouse', website: 'https://justt.ai' },
-  { company: 'eToro',          slug: 'etoro',          ats: 'greenhouse', website: 'https://etoro.com' },
 ];
 
+// Verified Greenhouse boards only. Slugs that 404'd in production
+// (monday.com, Fiverr, Snyk, Wiz, Hibob, Outbrain, WalkMe, Verbit,
+// Coralogix, Aqua Security, Armis, HoneyBook) were removed — those
+// companies are on different ATS (Workday, Comeet, Lever-not-found, custom).
 const ISRAELI_TECH: RawEntry[] = [
   { company: 'Orca Security',  slug: 'orcasecurity',   ats: 'greenhouse', website: 'https://orca.security' },
   { company: 'SimilarWeb',     slug: 'similarweb',     ats: 'greenhouse', website: 'https://similarweb.com' },
@@ -55,23 +53,11 @@ const ISRAELI_TECH: RawEntry[] = [
   { company: 'Cybereason',     slug: 'cybereason',     ats: 'greenhouse', website: 'https://cybereason.com' },
   { company: 'Connecteam',     slug: 'connecteam',     ats: 'greenhouse', website: 'https://connecteam.com' },
   { company: 'Cato Networks',  slug: 'catonetworks',   ats: 'greenhouse', website: 'https://catonetworks.com' },
-  { company: 'monday.com',     slug: 'mondaycom',      ats: 'greenhouse', website: 'https://monday.com' },
-  { company: 'Fiverr',         slug: 'fiverr',         ats: 'greenhouse', website: 'https://fiverr.com' },
-  { company: 'Snyk',           slug: 'snyk',           ats: 'greenhouse', website: 'https://snyk.io' },
-  { company: 'Wiz',            slug: 'wiz',            ats: 'greenhouse', website: 'https://wiz.io' },
-  { company: 'Hibob',          slug: 'hibob',          ats: 'greenhouse', website: 'https://hibob.com' },
   { company: 'Yotpo',          slug: 'yotpo',          ats: 'greenhouse', website: 'https://yotpo.com' },
-  { company: 'Outbrain',       slug: 'outbrain',       ats: 'greenhouse', website: 'https://outbrain.com' },
-  { company: 'WalkMe',         slug: 'walkme',         ats: 'greenhouse', website: 'https://walkme.com' },
-  { company: 'Verbit',         slug: 'verbit',         ats: 'greenhouse', website: 'https://verbit.ai' },
   { company: 'Sisense',        slug: 'sisense',        ats: 'greenhouse', website: 'https://sisense.com' },
-  { company: 'Coralogix',      slug: 'coralogix',      ats: 'greenhouse', website: 'https://coralogix.com' },
-  { company: 'Aqua Security',  slug: 'aquasecurity',   ats: 'greenhouse', website: 'https://aquasec.com' },
   { company: 'JFrog',          slug: 'jfrog',          ats: 'greenhouse', website: 'https://jfrog.com' },
   { company: 'BigID',          slug: 'bigid',          ats: 'greenhouse', website: 'https://bigid.com' },
   { company: 'Salt Security',  slug: 'saltsecurity',   ats: 'greenhouse', website: 'https://salt.security' },
-  { company: 'Armis',          slug: 'armis',          ats: 'greenhouse', website: 'https://armis.com' },
-  { company: 'HoneyBook',      slug: 'honeybook',      ats: 'lever',      website: 'https://honeybook.com' },
 ];
 
 // No France-based companies — the user's geo excludes France entirely.

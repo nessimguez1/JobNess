@@ -166,8 +166,13 @@ async function scoreAndInsert(
       fit_note: scoring.fit_note,
       match_bullets: scoring.match_bullets,
     });
+    // Upsert (not insert) — multiple sources can scrape the same job in
+    // parallel and race past the per-source dedup check. Without upsert we
+    // get "duplicate key value violates unique constraint jobs_pkey" spam
+    // and lose the score for that job.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: insertErr } = await supabase.from('jobs').insert(row as any);
+    const { error: insertErr } = await (supabase.from('jobs') as any)
+      .upsert(row, { onConflict: 'id', ignoreDuplicates: true });
     if (insertErr) throw insertErr;
     logger.info({ ...tag, title: job.title, score: scoring.score }, 'inserted');
     return true;
@@ -315,6 +320,11 @@ async function _runAllScrapersInner(): Promise<void> {
 
   // Sources run in parallel — each owns its own scrape_runs row + error handling,
   // so Promise.all is safe. Total wall time becomes max(slowest) instead of sum(all).
+  // Globes (jobs.globes.co.il) and TheMarker (jobs.themarker.com) are dropped
+  // from the pipeline — both refused TCP connections from Railway's IP region
+  // ("TypeError: fetch failed"). They likely geo-block non-Israeli IPs.
+  // Re-enable when behind an Israeli proxy or by porting to Playwright with
+  // a residential-IP service.
   await Promise.all([
     runSource('LinkedIn',          runLinkedInJobs,      patterns, minSalary),
     runSource('HiddenMarket',      runLinkedInPosts,     patterns, minSalary),
@@ -322,8 +332,6 @@ async function _runAllScrapersInner(): Promise<void> {
     runSource('Drushim',           runDrushim,           patterns, minSalary),
     runSource('eFinancialCareers', runEFinancialCareers, patterns, minSalary),
     runSource('AllJobs',           runAllJobs,           patterns, minSalary),
-    runSource('Globes',            runGlobes,            patterns, minSalary),
-    runSource('TheMarker',         runTheMarker,         patterns, minSalary),
     runSource('JobMaster',         runJobMaster,         patterns, minSalary),
   ]);
 
