@@ -374,21 +374,10 @@ export async function scoreJob(job: ScrapedJob): Promise<Scoring> {
 }
 
 async function _scoreJobInner(job: ScrapedJob): Promise<Scoring> {
-  if (!_groqDisabledReason) {
-    try {
-      const scoring = await scoreWithGroq(job);
-      logger.debug({ title: job.title, score: scoring.score }, 'scored (groq)');
-      return scoring;
-    } catch (groqErr: unknown) {
-      if (isGroqTpdExhaustion(groqErr)) {
-        _groqDisabledReason = describeErr(groqErr);
-        logger.warn(`groq TPD exhausted — skipping groq for rest of run: ${_groqDisabledReason}`);
-      } else {
-        logger.warn(`groq failed [${job.title}]: ${describeErr(groqErr)} — falling back to openai`);
-      }
-    }
-  }
-
+  // Groq path removed — the free-tier daily cap (100K tokens) is wiped out
+  // after ~130 jobs, and we now process 1500+ per cycle. gpt-4o-mini handles
+  // the full load reliably (~$0.20 per 1000 jobs at current pricing) and the
+  // rate-limit gate above keeps us within OpenAI's TPM ceiling.
   try {
     const scoring = await scoreWithOpenAI(job);
     logger.debug({ title: job.title, score: scoring.score }, 'scored (openai)');
