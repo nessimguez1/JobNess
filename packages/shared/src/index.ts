@@ -1,3 +1,3 @@
-export * from './types.js';
-export * from './profile.js';
-export * from './nessim.js';
+export * from './types';
+export * from './profile';
+export * from './nessim';
