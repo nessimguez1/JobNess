@@ -290,6 +290,14 @@ function CompanyCard({ company, onDraft, onTogglePin }: {
           <div className={`t-ink leading-tight truncate ${company.pinned ? 'font-serif-display text-[17px]' : 'text-[15px] font-semibold'}`}>{company.name}</div>
           <div className="t-muted text-[12px] num mt-0.5 flex items-center gap-1.5">
             {company.sector && <span className="truncate">{company.sector}</span>}
+            {company.ats === 'custom' && (
+              <span
+                title="No automated scraping; speculative outreach only"
+                className="shrink-0 px-1.5 py-0.5 rounded bg-soft b-line border text-[10px] uppercase tracking-wider t-muted"
+              >
+                speculative
+              </span>
+            )}
           </div>
         </div>
       </div>

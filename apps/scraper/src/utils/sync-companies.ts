@@ -1,18 +1,21 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { CAREER_PAGES } from '../config/career-pages.js';
+import { SPECULATIVE_COMPANIES } from '../config/speculative-companies.js';
 import { companyId, mono } from './hash.js';
 import { logger } from './logger.js';
 
 /**
- * Upsert every company in career-pages.ts into the `companies` table.
- * Idempotent: rows keyed by slug-derived ID. Only seeds config-sourced rows;
- * manually-added companies (source='manual') are left untouched.
+ * Upsert career-pages + speculative-companies into the `companies` table.
+ * Idempotent: rows keyed by computed ID. Only seeds config-sourced rows;
+ * manually-added companies (source='manual') are left untouched. Pinned/notes
+ * fields are not in the upsert payload, so they're preserved across syncs.
  *
  * Also refreshes job_count + last_job_at from the jobs table so the Companies
  * page always shows a live view.
  */
 export async function syncCompanies(supabase: SupabaseClient): Promise<void> {
-  const rows = CAREER_PAGES.map(t => ({
+  const allTargets = [...CAREER_PAGES, ...SPECULATIVE_COMPANIES];
+  const rows = allTargets.map(t => ({
     id: companyId(t.company),
     name: t.company,
     mono: mono(t.company),
@@ -34,7 +37,10 @@ export async function syncCompanies(supabase: SupabaseClient): Promise<void> {
     return;
   }
 
-  logger.info({ count: rows.length }, 'companies synced from config');
+  logger.info(
+    { total: rows.length, scrapeable: CAREER_PAGES.length, speculative: SPECULATIVE_COMPANIES.length },
+    'companies synced from config',
+  );
 }
 
 /**

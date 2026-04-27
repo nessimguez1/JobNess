@@ -7,10 +7,11 @@ export const PROFILE = {
     phone: "+972 54 649 5846",
     linkedin: "https://www.linkedin.com/in/nessim-guez-0519411b8/",
   },
+  // Order of strength matters for scoring decisions.
   languages: [
-    { lang: "French", level: "native" },
-    { lang: "English", level: "fluent (10 years lived in the US)" },
-    { lang: "Hebrew", level: "professional" },
+    { lang: "Hebrew",  level: "native (strongest for writing, speaking, and selling)" },
+    { lang: "English", level: "native-level (10 years lived in the US, American accent)" },
+    { lang: "French",  level: "native oral, fluent written (non-academic)" },
   ],
   currentRole: {
     title: "Relationship Manager",
@@ -25,13 +26,13 @@ export const PROFILE = {
       company: "Tafnit Discount (Discount Bank wealth arm)",
       role: "Intern, Wealth Management",
       years: "2023–2024",
+      description: "Cold-called existing clients, converted 150+ to Tafnit portfolio mandates in 10 months.",
     },
     {
       company: "IATI (Israel Advanced Technology Industries)",
       role: "Project Coordinator",
       years: "2022–2023",
-      description:
-        "Inside the Israeli tech ecosystem. Coordinated initiatives with 100+ tech companies.",
+      description: "Coordinated initiatives with 100+ Israeli tech companies — ecosystem exposure, not personal exec relationships.",
     },
     {
       company: "Eden Property Group",
@@ -39,27 +40,30 @@ export const PROFILE = {
       years: "2020–2022",
     },
     {
-      company: "IDF — Sayeret Harouv",
-      role: "Combat soldier (elite recon unit)",
+      company: "IDF — Sayeret Harouv (Kfir Brigade)",
+      role: "Assistant to Battalion Commander",
       years: "2018–2020",
     },
   ],
   education: [
-    { school: "Ono Academic College", degree: "MA Finance", year: "Nov 2025" },
-    {
-      school: "Reichman University (IDC)",
-      degree: "BA Business Administration",
-      year: "2023",
-    },
+    { school: "Ono Academic College", degree: "MA Finance & Capital Markets", year: "Nov 2025" },
+    { school: "Reichman University (IDC)", degree: "BA Business Administration & Entrepreneurship", year: "2023" },
   ],
   sideProject:
     "Co-founder of Sayeret Harouv Association — 3,000+ alumni network",
   targetRoles: [
-    "Private banking / Relationship Manager (French desk especially)",
-    "Fintech BD / Partnerships (Israel or remote EU/US)",
-    "VC / IR / Platform roles",
-    "Tech BD at scale-ups",
+    "Private banking / Relationship Manager (Tel Aviv desks of Swiss PBs especially)",
+    "Family office IR / banker / wealth associate (TLV-located or remote)",
+    "Israeli premium / private banking",
+    "Fintech BD / Partnerships in Israel",
+    "VC / IR / Platform roles in Israel",
+    "Tech BD at Israeli scale-ups",
   ],
+  geographies: {
+    primary: ["Tel Aviv area", "Israel (anywhere)"],
+    conditional: ["Miami / Florida — only with paid relocation + visa sponsorship"],
+    excluded: ["Switzerland", "United Kingdom", "Singapore", "France", "Germany", "Dubai", "everywhere else not on the primary list"],
+  },
   seniority: {
     yearsRealExperience: 4.5,
     note: "IDF years excluded. Eden BD (2yr) + IATI coordinator (1yr) + Tafnit intern (1yr) + UBP RM (current, ~6mo). Genuinely junior-to-mid.",
@@ -82,7 +86,7 @@ export const PROFILE = {
   },
   constraints: {
     minSalaryNIS: 18000,
-    geographies: ["Israel", "Remote EU", "Remote US"],
+    visaStatus: "US visa from childhood, no US citizenship/green card — Miami requires sponsorship",
     blocklist: [
       "UBP",
       "Union Bancaire Privée",

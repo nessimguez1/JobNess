@@ -1,6 +1,6 @@
 export type JobColumn = 'inbox' | 'interested' | 'applied' | 'archive';
 export type JobStatus = 'new' | 'interested' | 'applied' | 'rejected';
-export type JobSource = 'LinkedIn' | 'CareerPage' | 'Drushim' | 'HiddenMarket';
+export type JobSource = 'LinkedIn' | 'CareerPage' | 'Drushim' | 'HiddenMarket' | 'eFinancialCareers';
 export type ScrapeRunStatus = 'running' | 'ok' | 'failed';
 export type TargetPriority = 'high' | 'med' | 'low';
 

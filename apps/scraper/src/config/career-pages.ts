@@ -13,14 +13,12 @@ export type CompanySector =
   | 'Global Fintech'
   | 'WealthTech'
   | 'VC / Growth'
-  | 'HR-Tech / SaaS';
-
-// Workday + Custom ATS companies require Playwright — Phase 5.
-// This file contains all Greenhouse + Lever companies (JSON APIs, no browser needed).
-// All slugs below have been verified live against their ATS API.
+  | 'HR-Tech / SaaS'
+  | 'Swiss Private Bank'
+  | 'Family Office'
+  | 'Israeli Wealth';
 
 type RawEntry = Omit<CareerPageTarget, 'sector'>;
-
 function tag(sector: CompanySector, entries: RawEntry[]): CareerPageTarget[] {
   return entries.map(e => ({ ...e, sector }));
 }
@@ -49,16 +47,11 @@ const ISRAELI_TECH: RawEntry[] = [
   { company: 'Cato Networks',  slug: 'catonetworks',   ats: 'greenhouse', website: 'https://catonetworks.com' },
 ];
 
+// No France-based companies — the user's geo excludes France entirely.
 const EUROPEAN_FINTECH: RawEntry[] = [
-  { company: 'Alma',           slug: 'alma',           ats: 'greenhouse', website: 'https://almapay.com' },
   { company: 'Pleo',           slug: 'pleo',           ats: 'greenhouse', website: 'https://pleo.io' },
   { company: 'Liberis',        slug: 'liberis',        ats: 'greenhouse', website: 'https://liberis.com' },
-  { company: 'Ledger',         slug: 'ledger',         ats: 'lever',      website: 'https://ledger.com' },
-  { company: 'Pennylane',      slug: 'pennylane',      ats: 'lever',      website: 'https://pennylane.com' },
-  { company: 'Doctrine',       slug: 'doctrine',       ats: 'lever',      website: 'https://doctrine.fr' },
   { company: 'Trade Republic', slug: 'traderepublic',  ats: 'greenhouse', website: 'https://traderepublic.com' },
-  { company: 'Dataiku',        slug: 'dataiku',        ats: 'greenhouse', website: 'https://dataiku.com' },
-  { company: 'Mirakl',         slug: 'mirakl',         ats: 'greenhouse', website: 'https://mirakl.com' },
 ];
 
 const GLOBAL_FINTECH: RawEntry[] = [
@@ -67,19 +60,11 @@ const GLOBAL_FINTECH: RawEntry[] = [
   { company: 'Brex',           slug: 'brex',           ats: 'greenhouse', website: 'https://brex.com' },
   { company: 'Marqeta',        slug: 'marqeta',        ats: 'greenhouse', website: 'https://marqeta.com' },
   { company: 'Ebury',          slug: 'ebury',          ats: 'greenhouse', website: 'https://ebury.com' },
-  { company: 'N26',            slug: 'n26',            ats: 'greenhouse', website: 'https://n26.com' },
-  { company: 'Monzo',          slug: 'monzo',          ats: 'greenhouse', website: 'https://monzo.com' },
-  { company: 'SumUp',          slug: 'sumup',          ats: 'greenhouse', website: 'https://sumup.com' },
-  { company: 'GoCardless',     slug: 'gocardless',     ats: 'greenhouse', website: 'https://gocardless.com' },
-  { company: 'ComplyAdvantage', slug: 'complyadvantage', ats: 'greenhouse', website: 'https://complyadvantage.com' },
   { company: 'Fireblocks',     slug: 'fireblocks',     ats: 'greenhouse', website: 'https://fireblocks.com' },
   { company: 'Bitpanda',       slug: 'bitpanda',       ats: 'greenhouse', website: 'https://bitpanda.com' },
-  { company: 'Bitso',          slug: 'bitso',          ats: 'greenhouse', website: 'https://bitso.com' },
   { company: 'Adyen',          slug: 'adyen',          ats: 'greenhouse', website: 'https://adyen.com' },
   { company: 'Mercury',        slug: 'mercury',        ats: 'greenhouse', website: 'https://mercury.com' },
   { company: 'BILL',           slug: 'billcom',        ats: 'greenhouse', website: 'https://bill.com' },
-  { company: 'Taxbit',         slug: 'taxbit',         ats: 'greenhouse', website: 'https://taxbit.com' },
-  { company: 'Treasury Prime', slug: 'treasuryprime',  ats: 'greenhouse', website: 'https://treasuryprime.com' },
 ];
 
 const WEALTHTECH: RawEntry[] = [
@@ -87,9 +72,7 @@ const WEALTHTECH: RawEntry[] = [
   { company: 'Vestwell',       slug: 'vestwell',       ats: 'greenhouse', website: 'https://vestwell.com' },
   { company: 'iCapital',       slug: 'icapitalnetwork', ats: 'greenhouse', website: 'https://icapitalnetwork.com' },
   { company: 'Moonfare',       slug: 'moonfare',       ats: 'greenhouse', website: 'https://moonfare.com' },
-  { company: 'TIFIN',          slug: 'tifin',          ats: 'greenhouse', website: 'https://tifin.com' },
   { company: 'Betterment',     slug: 'betterment',     ats: 'greenhouse', website: 'https://betterment.com' },
-  { company: 'Altruist',       slug: 'altruist',       ats: 'greenhouse', website: 'https://altruist.com' },
 ];
 
 const VC_GROWTH: RawEntry[] = [
@@ -102,7 +85,6 @@ const HR_SAAS: RawEntry[] = [
   { company: 'Pendo',          slug: 'pendo',          ats: 'greenhouse', website: 'https://pendo.io' },
   { company: 'Salesloft',      slug: 'salesloft',      ats: 'greenhouse', website: 'https://salesloft.com' },
   { company: 'ZoomInfo',       slug: 'zoominfo',       ats: 'greenhouse', website: 'https://zoominfo.com' },
-  { company: 'Crossbeam',      slug: 'crossbeam',      ats: 'greenhouse', website: 'https://crossbeam.com' },
 ];
 
 export const CAREER_PAGES: CareerPageTarget[] = [
