@@ -80,7 +80,7 @@ export default function Terminal() {
             <div className="w-8 h-8 rounded-md bg-ink flex items-center justify-center shrink-0" aria-hidden="true">
               <span className="t-paper text-[15px] font-bold tracking-tight">J</span>
             </div>
-            <span className="font-serif-display text-[18px] t-ink leading-none">JobNess</span>
+            <span className="font-serif-display text-[20px] t-ink leading-none">JobNess</span>
           </div>
 
           <label className="sm:hidden relative flex-1 min-w-[160px]">

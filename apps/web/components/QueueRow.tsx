@@ -14,6 +14,7 @@ const STATUS_META: Record<Job['column_name'], { label: string; dot: string; text
 
 interface Props {
   job: Job;
+  index?: number;
   isFocused: boolean;
   isDueToday: boolean;
   onMove: (id: string, col: Job['column_name']) => void;
@@ -22,7 +23,7 @@ interface Props {
   onDraftEmail: (job: Job) => void;
 }
 
-function QueueRowImpl({ job, isFocused, isDueToday, onMove, onOpen, onTrash, onDraftEmail }: Props) {
+function QueueRowImpl({ job, index = 0, isFocused, isDueToday, onMove, onOpen, onTrash, onDraftEmail }: Props) {
   const [showFit, setShowFit] = useState(false);
   const status = STATUS_META[job.column_name];
   const tone = scoreTone(job.score);
@@ -45,7 +46,8 @@ function QueueRowImpl({ job, isFocused, isDueToday, onMove, onOpen, onTrash, onD
       aria-label={`${job.company}, ${job.title}, ${status.label}`}
       onClick={() => onOpen(job)}
       onKeyDown={handleKey}
-      className={`group relative bg-card border rounded-lg px-4 py-3 transition-all cursor-pointer ${isFocused ? 'b-ink shadow-md' : 'b-line hover:b-line-strong'}`}
+      style={{ animationDelay: `${Math.min(index, 11) * 35}ms` }}
+      className={`group relative bg-card border rounded-lg px-4 py-3 transition-all cursor-pointer row-stagger ${isFocused ? 'b-ink shadow-md' : 'b-line hover:b-line-strong'}`}
     >
       <div className="flex items-start gap-3">
         <div

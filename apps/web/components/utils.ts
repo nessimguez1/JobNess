@@ -12,7 +12,7 @@ export function formatRelative(days: number): string {
 }
 
 export function scoreTone(score: number) {
-  if (score >= 85) return { text: 't-forest', bg: 'bg-forest-soft', border: 'b-olive-soft' };
-  if (score >= 70) return { text: 't-ink',   bg: 'bg-soft',        border: 'b-line' };
-  return                 { text: 't-dim',    bg: 'bg-soft',        border: 'b-line' };
+  if (score >= 85) return { text: 't-paper', bg: 'bg-forest', border: 'b-forest' };
+  if (score >= 70) return { text: 't-ink',   bg: 'bg-soft',   border: 'b-line' };
+  return                 { text: 't-dim',    bg: 'bg-card',   border: 'b-line' };
 }

@@ -107,7 +107,7 @@ export default function Outreach() {
     <>
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 className="t-ink text-[24px] font-semibold leading-tight">Outreach</h2>
+          <h2 className="t-ink text-[24px] sm:text-[28px] font-semibold leading-tight tracking-tight">Outreach</h2>
           <div className="t-muted text-[13px] num mt-1">
             {stats.total} sent · {stats.pending} with follow-up · {stats.due > 0 ? <span className="t-brick font-semibold">{stats.due} due today</span> : 'none due'}
           </div>

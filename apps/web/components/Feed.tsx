@@ -207,9 +207,9 @@ export default function Feed() {
 
   return (
     <>
-      <div className="flex items-end justify-between gap-4 mb-4 flex-wrap">
+      <div className="flex items-end justify-between gap-4 mb-6 flex-wrap">
         <div>
-          <h2 className="t-ink text-[24px] font-semibold leading-tight tracking-tight">Queue</h2>
+          <h2 className="t-ink text-[24px] sm:text-[28px] font-semibold leading-tight tracking-tight">Queue</h2>
           <div className="t-muted text-[13px] num mt-1 flex items-center gap-2 flex-wrap">
             {loading ? 'loading…' : (
               <>
@@ -221,7 +221,10 @@ export default function Feed() {
                 {stats.due > 0 && (
                   <>
                     <span aria-hidden="true">·</span>
-                    <span className="t-brick font-semibold">{stats.due} due today</span>
+                    <span className="inline-flex items-center gap-1 t-brick font-semibold">
+                      <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-brick" />
+                      {stats.due} due today
+                    </span>
                   </>
                 )}
                 {stats.appliedThisWeek > 0 && (
@@ -239,7 +242,7 @@ export default function Feed() {
         <div className="t-muted text-[12px] num">{scoredCount}/{jobs.length} scored</div>
       </div>
 
-      <div className="flex items-center gap-2 mb-4 flex-wrap">
+      <div className="flex items-center gap-2 mb-5 flex-wrap">
         <label className="relative flex-1 min-w-[200px] max-w-[360px]">
           <span className="sr-only">Search queue</span>
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 t-dim" aria-hidden="true" />
@@ -302,10 +305,11 @@ export default function Feed() {
         </div>
       ) : (
         <div ref={listRef} className="space-y-2">
-          {queue.map(j => (
+          {queue.map((j, i) => (
             <QueueRow
               key={j.id}
               job={j}
+              index={i}
               isFocused={focusedId === j.id}
               isDueToday={j.column_name === 'applied' && !!j.follow_up_at && j.follow_up_at <= today}
               onMove={moveJob}
