@@ -19,10 +19,11 @@ const METHOD_ICON: Record<OutreachMethod, React.ReactNode> = {
 };
 
 const TYPE_STYLE: Record<OutreachType, string> = {
-  cold:        'bg-steel-soft t-steel',
-  speculative: 'bg-soft t-muted',
-  warm:        'bg-forest-soft t-forest',
-  linkedin:    'bg-soft t-muted',
+  cover_letter: 'bg-forest-soft t-forest',
+  cold:         'bg-steel-soft t-steel',
+  speculative:  'bg-soft t-muted',
+  warm:         'bg-forest-soft t-forest',
+  linkedin:     'bg-soft t-muted',
 };
 
 export default function Outreach() {

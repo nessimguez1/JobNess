@@ -30,7 +30,7 @@ export interface Scoring {
 }
 
 export type OutreachMethod = 'email' | 'linkedin' | 'website';
-export type OutreachType   = 'cold' | 'speculative' | 'warm' | 'linkedin';
+export type OutreachType   = 'cover_letter' | 'cold' | 'speculative' | 'warm' | 'linkedin';
 
 export interface OutreachLog {
   sent_to?: string;

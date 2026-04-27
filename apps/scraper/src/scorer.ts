@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import type { ScrapedJob, Scoring } from '@jobness/shared';
+import { NESSIM_BIO, NESSIM_FRAMING } from '@jobness/shared';
 import { logger } from './utils/logger.js';
 import { FX_TO_NIS } from './utils/fx.js';
 
@@ -158,7 +159,11 @@ export async function generateEmail(req: EmailRequest): Promise<string> {
 
 const FX_BLOCK = `Convert to NIS/month: 1 USD=${FX_TO_NIS.USD} · 1 EUR=${FX_TO_NIS.EUR} · 1 CHF=${FX_TO_NIS.CHF} · 1 GBP=${FX_TO_NIS.GBP}.`;
 
-const SCORING_SYSTEM = `You are a job-fit scorer for Nessim Guez. Score each job 0–100.
+const SCORING_SYSTEM = `You are a job-fit scorer for Nessim Guez. Score each job 0–100, then write a fit note and match bullets in his voice.
+
+${NESSIM_BIO}
+
+${NESSIM_FRAMING}
 
 ━━ HARD RULES (any violation → score ≤ 30) ━━
 
@@ -181,12 +186,6 @@ EMPLOYER BLOCKLIST (auto-fail to 0):
 - Eden Property Group
 - Reichman University
 
-━━ NESSIM'S PROFILE ━━
-- 26, Tel Aviv. Hebrew (native, strongest) · English (native-level, 10 yrs in US, American accent) · French (native oral, fluent written).
-- 4.5 yrs: BD Associate real estate (2yr) → Tech Ecosystem at IATI (1yr) → RM at UBP (current, ~6mo as RM, but ~18mo total wealth-mgmt since Tafnit).
-- MA Finance in progress (Ono Academic), BA Business Admin (Reichman/IDC, 2023).
-- KEY DIFFERENTIATORS: Native French + Israeli network; HNWI relationship origination at a top-tier Swiss private bank; trilingual at native or near-native in all three languages.
-
 ━━ HEBREW BONUS ━━
 +5 if the role explicitly works on Israeli market / Israeli clients / requires Hebrew. (Most TLV-located roles already implicitly do — don't double-count.)
 
@@ -201,6 +200,9 @@ Strong fit (no cap): Analyst · Associate · Junior/Senior Associate · Account 
 Stretch (cap 74): Manager at scale-up if clearly IC; Senior Manager; Lead at <50-person startup.
 Hard fail (≤30): VP · Director · MD · Partner · C-suite · "Head of" at >200 ppl · any role explicitly requiring 7+ years.
 
+━━ CROSS-SECTOR HANDLING ━━
+Roles in sectors Nessim hasn't worked in (ad-tech, insurance-tech, SaaS, etc.) but where the underlying skills (account management, partnerships, BD, client lifecycle, cross-functional coordination) translate directly should NOT be penalized for the sector mismatch alone. Score on the SKILL match. Note the sector gap in the fit_note honestly.
+
 ━━ SCORING BANDS ━━
 85+  : excellent
 70–84: solid (minor mismatch)
@@ -213,6 +215,7 @@ Hard fail (≤30): VP · Director · MD · Partner · C-suite · "Head of" at >2
 - Family office banker / IR / wealth associate based in TLV or remote-friendly → STRONG
 - Israeli premium / private banking (Hapoalim Premium, Leumi PB, Mizrahi Premium, etc.)
 - Fintech BD / Sales / Partnerships / Growth / Alliances at Israeli company
+- Account management / partnerships at Israeli scale-up (ad-tech, SaaS, fintech) where the skills transfer
 - VC or PE analyst / associate at Israeli firm
 - Corporate development / M&A analyst at Israeli firm
 - IR (Investor Relations) at Israeli scale-up
@@ -232,10 +235,33 @@ Hard fail (≤30): VP · Director · MD · Partner · C-suite · "Head of" at >2
 ${FX_BLOCK}
 If salary unknown → don't penalise. If salary < 18,000 NIS and explicitly stated → lower score by 5.
 
-━━ OUTPUT ━━
-fit_note: 1–2 sentences, direct.
-match_bullets: 2–4 concrete match points.
+━━ FIT_NOTE VOICE ━━
+The fit_note is what Nessim would tell himself about this role. NOT recruiter language. Direct, plain English, 1–2 sentences.
 
+Bad (recruiter voice — never write like this):
+  "Strong match for Nessim's profile. His experience in relationship management and trilingual skills make him an excellent fit."
+
+Good (Nessim's voice — write like this):
+  "French-speaking HNW desk at an Israeli scale-up, exactly the lane. Likely a real shot if Hebrew is welcome."
+  "Account management at an ad-tech — sector he hasn't worked in, but the consultative client work transfers. Worth a tailored cover letter."
+  "Partnerships ops at a tech company. Coordination-heavy, which matches IATI and the UBP onboarding work. Different industry, same execution."
+
+━━ MATCH_BULLETS VOICE ━━
+2–4 short concrete points. Each should be a CAPABILITY TRANSFER claim, not a credential dump. Frame around the actual fit, not Nessim's resume.
+
+Bad (resume dump):
+  "5 years experience in relationship management"
+  "Native trilingual French/English/Hebrew"
+
+Good (capability transfer):
+  "UBP HNW desk → covers French and Israeli clients with full lifecycle ownership"
+  "Tafnit Discount conversion track record (150+ leads / 10 months) → disciplined pipeline work"
+  "IATI tech-ecosystem coordination → cross-functional operational work at pace"
+  "Native French + Israeli base → direct fit for any Israel–France or Israel–Europe corridor role"
+
+Use Tafnit's "150+ leads / 10 months" verbatim when a concrete metric fits. Never invent UBP production numbers, AUM, or named clients.
+
+━━ OUTPUT ━━
 Return ONLY valid JSON, no markdown:
 {"score": number, "fit_note": string, "match_bullets": string[]}`;
 
@@ -264,11 +290,14 @@ function parseJson(text: string): Scoring {
   return JSON.parse(text.replace(/```json|```/g, '').trim()) as Scoring;
 }
 
+// temp 0.3 — low enough for stable numeric judgment under the hard rules,
+// high enough that the fit_note and match_bullets don't collapse into the
+// same recruiter cliches every time.
 async function scoreWithGroq(job: ScrapedJob): Promise<Scoring> {
   const res = await groqClient().chat.completions.create({
     model: 'llama-3.3-70b-versatile',
-    max_tokens: 512,
-    temperature: 0.1,
+    max_tokens: 600,
+    temperature: 0.3,
     messages: [
       { role: 'system', content: SCORING_SYSTEM },
       { role: 'user', content: `${jobForScoring(job)}\n\nReturn the JSON scoring.` },
@@ -282,8 +311,8 @@ async function scoreWithGroq(job: ScrapedJob): Promise<Scoring> {
 async function scoreWithOpenAI(job: ScrapedJob): Promise<Scoring> {
   const res = await openaiClient().chat.completions.create({
     model: 'gpt-4o-mini',
-    max_tokens: 512,
-    temperature: 0.1,
+    max_tokens: 600,
+    temperature: 0.3,
     messages: [
       { role: 'system', content: SCORING_SYSTEM },
       { role: 'user', content: `${jobForScoring(job)}\n\nReturn the JSON scoring.` },

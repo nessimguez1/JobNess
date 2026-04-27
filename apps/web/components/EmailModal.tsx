@@ -1,18 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, Mail, Send, Linkedin, Check, Copy, AlertCircle, Lock, Sparkles, Loader2 } from 'lucide-react';
+import { X, Mail, Send, Linkedin, Check, Copy, AlertCircle, Lock, Sparkles, Loader2, FileText } from 'lucide-react';
 import type { Job, OutreachLog, OutreachMethod } from '@jobness/shared';
 import { copyEmail } from '../lib/signature';
 import { logOutreach, lastSentToForCompany } from '../lib/outreach';
 import Modal from './Modal';
 
-type EmailTab = 'cold' | 'warm' | 'linkedin';
+type EmailTab = 'cover_letter' | 'cold' | 'linkedin';
 
 const CONTEXT_PLACEHOLDER: Record<EmailTab, string> = {
-  cold:     'Optional: what drew you to this role? (e.g. they just raised Series B, you know their product, a mutual connection…)',
-  warm:     'Required: what did they write or do? (e.g. their LinkedIn post about X, their talk at Y conference…)',
-  linkedin: 'Optional: something specific about them or their company',
+  cover_letter: 'Optional: anything specific about the role or team to reference',
+  cold:         'Optional: what drew you to this role (recent raise, product angle, mutual connection…)',
+  linkedin:     'Optional: something specific about them or their company',
 };
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
 }
 
 export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
-  const [tab, setTab]           = useState<EmailTab>('cold');
+  const [tab, setTab]           = useState<EmailTab>('cover_letter');
   const [context, setContext]   = useState('');
   const [subject, setSubject]   = useState('');
   const [body, setBody]         = useState('');
@@ -60,7 +60,6 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
   }, [tab]);
 
   const generate = async () => {
-    if (tab === 'warm' && !context.trim()) return;
     setGenerating(true);
     setGenError('');
     try {
@@ -119,12 +118,12 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
     }
   };
 
-  // Auto-generate on open / tab change for cold + LinkedIn (warm waits for context).
+  // Auto-generate on open / tab change. All three tabs auto-generate — none of
+  // them requires upfront context (context is optional for all).
   const autoGenFiredFor = useRef<string>('');
   useEffect(() => {
     const key = `${job.id}:${tab}`;
     if (autoGenFiredFor.current === key) return;
-    if (tab !== 'cold' && tab !== 'linkedin') return;
     autoGenFiredFor.current = key;
     void generate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,7 +141,7 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const canGenerate = tab !== 'warm' || context.trim().length > 0;
+  const canGenerate = true;
   const titleId = `email-modal-title-${job.id}`;
 
   return (
@@ -168,9 +167,9 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
       <div className="px-4 py-3 border-b b-line bg-paper">
         <div role="tablist" aria-label="Email type" className="inline-flex items-center gap-0.5 bg-card border b-line rounded-md p-0.5 overflow-x-auto scroll-thin max-w-full">
           {([
-            { k: 'cold'     as const, label: 'Cold Apply',  icon: <Send     size={13} aria-hidden="true" /> },
-            { k: 'warm'     as const, label: 'Warm Intro',  icon: <Mail     size={13} aria-hidden="true" /> },
-            { k: 'linkedin' as const, label: 'LinkedIn DM', icon: <Linkedin size={13} aria-hidden="true" /> },
+            { k: 'cover_letter' as const, label: 'Cover Letter', icon: <FileText size={13} aria-hidden="true" /> },
+            { k: 'cold'         as const, label: 'Cold Mail',    icon: <Send     size={13} aria-hidden="true" /> },
+            { k: 'linkedin'     as const, label: 'LinkedIn DM',  icon: <Linkedin size={13} aria-hidden="true" /> },
           ]).map(t => (
             <button
               type="button"
@@ -202,7 +201,7 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
         <div>
           <label className="block">
             <span className="block t-muted num text-[11px] uppercase tracking-wider mb-1.5 font-semibold">
-              {tab === 'warm' ? 'What did they write or do?' : 'Context (optional)'}
+              Context (optional)
             </span>
             <div className="flex gap-2">
               <input
@@ -230,9 +229,6 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
               <button type="button" onClick={generate} className="underline hover:no-underline">Try again</button>
             </div>
           )}
-          {tab === 'warm' && !context.trim() && (
-            <div className="text-[12px] t-muted mt-1">Fill in what they wrote or did to unlock generation.</div>
-          )}
         </div>
 
         <label className="block">
@@ -242,13 +238,13 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
           <textarea
             value={body}
             onChange={e => setBody(e.target.value)}
-            rows={tab === 'linkedin' ? 7 : 12}
+            rows={tab === 'linkedin' ? 7 : tab === 'cover_letter' ? 18 : 12}
             placeholder={generating ? '' : 'Click Generate above to draft with AI…'}
             className="w-full bg-paper border b-line rounded-md px-3 py-2 text-[13px] leading-relaxed resize-none placeholder:t-dim"
           />
         </label>
 
-        {tab === 'cold' && (
+        {(tab === 'cold' || tab === 'cover_letter') && (
           <div role="note" className="flex items-start gap-2 p-2.5 bg-steel-soft border b-steel-soft rounded-md text-[13px] t-steel">
             <AlertCircle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
             <div><span className="font-semibold">Reminder: </span>attach <span className="num font-semibold">CV_Nessim_Guez.pdf</span> in Gmail before sending.</div>
