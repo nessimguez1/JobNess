@@ -151,7 +151,7 @@ export default function Settings() {
             <input value={newBlock} onChange={e => setNewBlock(e.target.value)}
               placeholder="Add company to exclude..."
               aria-label="Add company to blocklist"
-              className="flex-1 bg-paper border b-line rounded-md px-3 py-1.5 text-[13px]"
+              className="flex-1 bg-paper border b-line rounded-md px-3 py-1.5 text-[13px] min-h-9"
               onKeyDown={e => { if (e.key === 'Enter') addBlock(); }} />
             <button type="button" onClick={addBlock} className="min-h-9 px-3 rounded-md bg-card border b-line t-ink text-[13px] hover:bg-soft">Add</button>
           </div>
@@ -162,9 +162,9 @@ export default function Settings() {
             <FileText size={15} className="t-ink" aria-hidden="true" />
             <h3 className="t-ink text-[14px] font-semibold">Master CV</h3>
           </div>
-          <div className="flex items-center justify-between p-3 bg-soft border b-line rounded-md">
+          <div className="flex items-center justify-between p-3 bg-soft rounded-md">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-md bg-card border b-line flex items-center justify-center" aria-hidden="true">
+              <div className="w-9 h-9 rounded-md bg-card flex items-center justify-center" aria-hidden="true">
                 <FileText size={15} className="t-ink" />
               </div>
               <div>
@@ -188,7 +188,7 @@ export default function Settings() {
               { name: 'LinkedIn Jobs', detail: 'coming soon' },
               { name: 'Drushim / AllJobs', detail: 'coming soon' },
             ].map(s => (
-              <li key={s.name} className="flex items-center justify-between p-2.5 bg-soft border b-line rounded-md">
+              <li key={s.name} className="flex items-center justify-between p-2.5 bg-soft rounded-md">
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full pulse-dot" style={{ backgroundColor: 'var(--forest)' }} aria-hidden="true" />
                   <span className="t-ink">{s.name}</span>

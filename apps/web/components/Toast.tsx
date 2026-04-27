@@ -69,7 +69,7 @@ export default function ToastHost() {
                 await t.action!.onClick();
                 dismiss(t.id);
               }}
-              className="text-[12px] num font-semibold uppercase tracking-wider underline decoration-dotted underline-offset-2 hover:decoration-solid shrink-0"
+              className="min-h-9 px-2 -my-1 text-[12px] num font-semibold underline decoration-dotted underline-offset-2 hover:decoration-solid shrink-0 inline-flex items-center"
             >
               {t.action.label}
             </button>

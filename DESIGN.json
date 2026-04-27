@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-27T00:00:00Z",
+  "title": "Design System: JobNess",
+  "extensions": {
+    "colorMeta": {
+      "daybreak-cream": {
+        "role": "neutral",
+        "displayName": "Daybreak Cream",
+        "canonical": "oklch(97% 0.012 85)",
+        "tonalRamp": [
+          "oklch(20% 0.012 85)",
+          "oklch(34% 0.012 85)",
+          "oklch(48% 0.012 85)",
+          "oklch(60% 0.012 85)",
+          "oklch(72% 0.012 85)",
+          "oklch(82% 0.012 85)",
+          "oklch(90% 0.012 85)",
+          "oklch(97% 0.012 85)"
+        ]
+      },
+      "hearth-ink": {
+        "role": "primary",
+        "displayName": "Hearth Ink",
+        "canonical": "oklch(15% 0.008 60)",
+        "tonalRamp": [
+          "oklch(10% 0.008 60)",
+          "oklch(15% 0.008 60)",
+          "oklch(22% 0.008 60)",
+          "oklch(32% 0.008 60)",
+          "oklch(45% 0.008 60)",
+          "oklch(60% 0.008 60)",
+          "oklch(78% 0.008 60)",
+          "oklch(94% 0.008 60)"
+        ]
+      },
+      "moss": {
+        "role": "secondary",
+        "displayName": "Moss",
+        "canonical": "oklch(42% 0.07 130)",
+        "tonalRamp": [
+          "oklch(20% 0.05 130)",
+          "oklch(30% 0.06 130)",
+          "oklch(42% 0.07 130)",
+          "oklch(54% 0.08 130)",
+          "oklch(66% 0.07 130)",
+          "oklch(78% 0.05 130)",
+          "oklch(88% 0.03 130)",
+          "oklch(95% 0.015 130)"
+        ]
+      },
+      "solar-amber": {
+        "role": "secondary",
+        "displayName": "Solar Amber",
+        "canonical": "oklch(45% 0.11 35)",
+        "tonalRamp": [
+          "oklch(22% 0.07 35)",
+          "oklch(33% 0.09 35)",
+          "oklch(45% 0.11 35)",
+          "oklch(57% 0.12 35)",
+          "oklch(70% 0.11 35)",
+          "oklch(82% 0.07 35)",
+          "oklch(90% 0.04 35)",
+          "oklch(96% 0.02 35)"
+        ]
+      },
+      "coastal-blue": {
+        "role": "secondary",
+        "displayName": "Coastal Blue",
+        "canonical": "oklch(45% 0.06 250)",
+        "tonalRamp": [
+          "oklch(22% 0.05 250)",
+          "oklch(33% 0.06 250)",
+          "oklch(45% 0.06 250)",
+          "oklch(57% 0.07 250)",
+          "oklch(70% 0.06 250)",
+          "oklch(82% 0.04 250)",
+          "oklch(90% 0.025 250)",
+          "oklch(96% 0.012 250)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "oklch(89% 0.02 85)",
+        "tonalRamp": [
+          "oklch(35% 0.015 85)",
+          "oklch(50% 0.02 85)",
+          "oklch(65% 0.025 85)",
+          "oklch(75% 0.025 85)",
+          "oklch(82% 0.025 85)",
+          "oklch(89% 0.02 85)",
+          "oklch(94% 0.015 85)",
+          "oklch(98% 0.008 85)"
+        ]
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Text Muted",
+        "canonical": "oklch(48% 0.012 80)",
+        "tonalRamp": [
+          "oklch(15% 0.012 80)",
+          "oklch(25% 0.012 80)",
+          "oklch(38% 0.012 80)",
+          "oklch(48% 0.012 80)",
+          "oklch(60% 0.012 80)",
+          "oklch(72% 0.012 80)",
+          "oklch(85% 0.012 80)",
+          "oklch(95% 0.008 80)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display Serif",
+        "purpose": "Source Serif 4. Reserved for names of entities — the product mark, a company name on a queue row, the opening-quote glyph in fit notes. Never body text."
+      },
+      "headline": {
+        "displayName": "Page Headline",
+        "purpose": "Hanken Grotesk 24/600. One per view. Used on h2 page titles like 'Queue', 'Settings', 'Companies'."
+      },
+      "title": {
+        "displayName": "Section Title",
+        "purpose": "Hanken Grotesk 14/600. Used on h3 inside settings cards — 'Filters', 'Blocklist', 'CV'."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Hanken Grotesk 13–14/400. Job title text, fit-note copy, descriptions. Capped at 65–75ch."
+      },
+      "label": {
+        "displayName": "Status Eyebrow",
+        "purpose": "Hanken Grotesk 11/600 uppercase, letter-spacing 0.05em, tabular-nums. The only place uppercase appears in the entire system."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 1px 2px rgba(26, 24, 21, 0.04)",
+        "purpose": "Almost-imperceptible soft edge. Used only where a card sits on a tinted background and would otherwise visually merge."
+      },
+      {
+        "name": "modal",
+        "value": "0 20px 50px rgba(26, 24, 21, 0.18), 0 8px 20px rgba(26, 24, 21, 0.08)",
+        "purpose": "The only true shadow in the system. Two-layer, ink-tinted, falls long. Modal panel only."
+      },
+      {
+        "name": "row-focus",
+        "value": "0 4px 12px rgba(26, 24, 21, 0.06)",
+        "purpose": "Quiet lift on a focused queue row to make keyboard position visible without breaking the flat doctrine."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-state",
+        "value": "ease",
+        "purpose": "0.12–0.18s state transitions on buttons, links, and ghost icon hovers."
+      },
+      {
+        "name": "ease-modal",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "0.2s modal panel entrance — translateY(6px) scale(0.99) → rest. The most expressive curve in the system."
+      },
+      {
+        "name": "fade-in",
+        "value": "0.2s ease",
+        "purpose": "Quiet reveal for inline disclosures (the fit-note expansion). Opacity + 2px translateY."
+      },
+      {
+        "name": "shimmer",
+        "value": "1.4s ease-in-out infinite",
+        "purpose": "Loading skeleton for the queue. Background-position only; never animates layout."
+      },
+      {
+        "name": "pulse-dot",
+        "value": "2.4s ease-in-out infinite",
+        "purpose": "Live status indicator (scrape activity). Opacity 0.5 → 1 → 0.5. The only persistent animation in the system."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Pill (Selected Tab / Active Filter)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The selection tell across the system — used for the active main-nav tab, the active queue filter, and the active toggle in Settings. Inverted ink-on-cream pill, never lifts, never glows.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Queue <span class=\"ds-count\">12</span></button>",
+      "css": ".ds-btn-primary { background: #1a1815; color: #faf7f0; height: 36px; padding: 0 12px; border: 0; border-radius: 6px; font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: background 0.12s ease; } .ds-btn-primary:hover { background: #2d2923; } .ds-btn-primary:focus-visible { outline: 2px solid #1a1815; outline-offset: 2px; } .ds-btn-primary .ds-count { font-size: 11px; font-weight: 600; opacity: 0.8; }"
+    },
+    {
+      "name": "Ghost Icon Button (Sage Action)",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The row-action button. 36×36 transparent at rest, deepens to a tinted soft surface on hover. Three semantic variants: sage (interested), brick (archive), steel (send/applied). Sage shown here.",
+      "html": "<button class=\"ds-btn-ghost-sage\" type=\"button\" aria-label=\"Mark interested\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z\"/></svg></button>",
+      "css": ".ds-btn-ghost-sage { background: transparent; color: #6b6558; height: 36px; width: 36px; border: 0; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.12s ease, color 0.12s ease; } .ds-btn-ghost-sage:hover { background: #e6ece0; color: #3f5c2e; } .ds-btn-ghost-sage:focus-visible { outline: 2px solid #1a1815; outline-offset: 2px; } .ds-btn-ghost-sage .ds-icon { width: 14px; height: 14px; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "The queue filter input. White card surface, 1px Line border, icon left-pinned at 12px, ink-color outline on focus instead of a border shift.",
+      "html": "<label class=\"ds-input-search\"><svg class=\"ds-input-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input type=\"text\" placeholder=\"Filter — / to focus\" /></label>",
+      "css": ".ds-input-search { position: relative; display: inline-block; width: 280px; } .ds-input-search .ds-input-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: #767060; pointer-events: none; } .ds-input-search input { width: 100%; height: 36px; padding: 0 12px 0 32px; background: #ffffff; color: #1a1815; border: 1px solid #e5dfce; border-radius: 6px; font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 13px; outline: none; } .ds-input-search input::placeholder { color: #767060; } .ds-input-search input:focus-visible { outline: 2px solid #1a1815; outline-offset: 1px; }"
+    },
+    {
+      "name": "Queue Row Card",
+      "kind": "card",
+      "refersTo": "card-row",
+      "description": "The signature surface of the system. Status dot, serif company name, sans job title, tabular-nums metadata, score chip pinned right. Flat at rest; border deepens on hover.",
+      "html": "<article class=\"ds-row\" tabindex=\"0\"><div class=\"ds-row-body\"><span class=\"ds-row-dot\" aria-hidden=\"true\"></span><div class=\"ds-row-text\"><div class=\"ds-row-head\"><h3 class=\"ds-row-company\">Pictet &amp; Cie</h3><span class=\"ds-row-eyebrow\">interested</span></div><div class=\"ds-row-title\">Senior Relationship Manager — French Desk</div><div class=\"ds-row-meta\"><span>Geneva</span><span class=\"ds-row-salary\">CHF 180–220k</span><span>3d ago</span></div></div><div class=\"ds-row-score\"><span class=\"ds-score-num\">92</span></div></div></article>",
+      "css": ".ds-row { display: block; background: #ffffff; border: 1px solid #e5dfce; border-radius: 8px; padding: 12px 16px; cursor: pointer; transition: border-color 0.15s ease, box-shadow 0.15s ease; outline: none; font-family: 'Hanken Grotesk', system-ui, sans-serif; } .ds-row:hover { border-color: #c7bfa8; box-shadow: 0 4px 12px rgba(26, 24, 21, 0.06); } .ds-row:focus-visible { border-color: #1a1815; box-shadow: 0 4px 12px rgba(26, 24, 21, 0.06); } .ds-row-body { display: flex; align-items: flex-start; gap: 12px; } .ds-row-dot { width: 6px; height: 6px; border-radius: 50%; background: #3f5c2e; margin-top: 8px; flex-shrink: 0; } .ds-row-text { flex: 1; min-width: 0; } .ds-row-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; } .ds-row-company { font-family: 'Source Serif 4', Georgia, serif; font-size: 17px; font-weight: 500; color: #1a1815; line-height: 1.15; letter-spacing: -0.015em; margin: 0; } .ds-row-eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #3f5c2e; font-variant-numeric: tabular-nums; } .ds-row-title { color: #1a1815; font-size: 14px; line-height: 1.35; margin-top: 2px; } .ds-row-meta { display: flex; gap: 12px; margin-top: 6px; font-size: 12px; color: #6b6558; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; flex-wrap: wrap; } .ds-row-meta .ds-row-salary { color: #1a1815; font-weight: 600; } .ds-row-score { background: #e6ece0; border: 1px solid #c9d3a8; border-radius: 4px; padding: 2px 8px; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; color: #3f5c2e; flex-shrink: 0; }"
+    },
+    {
+      "name": "Score Chip (High)",
+      "kind": "chip",
+      "refersTo": "chip-score-high",
+      "description": "The score readout. Three states: ≥85 sage, 70–84 neutral, <70 dim. Tabular-nums; one number speaks for itself.",
+      "html": "<span class=\"ds-chip-high\">92</span>",
+      "css": ".ds-chip-high { display: inline-block; background: #e6ece0; border: 1px solid #c9d3a8; border-radius: 4px; padding: 2px 8px; font-family: 'Hanken Grotesk', system-ui, sans-serif; font-size: 13px; font-weight: 700; color: #3f5c2e; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }"
+    },
+    {
+      "name": "Status Pill (Eyebrow + Dot)",
+      "kind": "chip",
+      "refersTo": "status-pill",
+      "description": "The system's primary status tell. 1.5×1.5 colored dot, 11px uppercase label with letter-spacing 0.05em. Color marks the column.",
+      "html": "<span class=\"ds-status\"><span class=\"ds-status-dot\" aria-hidden=\"true\"></span><span class=\"ds-status-label\">due today</span></span>",
+      "css": ".ds-status { display: inline-flex; align-items: center; gap: 6px; font-family: 'Hanken Grotesk', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #8b3a2e; display: inline-block; } .ds-status-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #8b3a2e; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Daybook",
+    "overview": "JobNess is the screen equivalent of a private hand-kept notebook. Each morning, opening the app should feel like opening a clean linen-paper page: warm, dense, deliberate, quiet. The visual system rejects the recruiter-shaped noise of LinkedIn and the neon dopamine of fintech-bro dashboards in equal measure. Information is set, not arranged; entries are read, not browsed; decisions are recorded, not announced. The aesthetic is paper, not phosphor. A warm off-white surface (#faf7f0) carries near-black text (#1a1815); a faint multiply-blended noise overlay gives the page real grain. Earth-tone accents — moss, solar amber, coastal blue — appear sparingly to mark category and never to attract attention. Type does the heavy lifting: a serif display face for the brand mark and the company name on every queue row, a single sans for everything else, tabular numerics on every score, salary, and date. Surfaces are flat by default. Borders deepen one step on hover and one more on focus; selection inverts to ink-on-paper rather than lifting. This system explicitly rejects: the LinkedIn / Indeed feed; the crypto / fintech-bro neon dark mode; the generic SaaS dashboard; productivity gamification.",
+    "keyCharacteristics": [
+      "Paper-cream surface with a subtle real-grain texture; never pure white, never dark mode.",
+      "Serif (Source Serif 4) for brand and entity names; sans (Hanken Grotesk) for everything else.",
+      "Tabular numerics on all countables — scores, salaries, days-ago.",
+      "Flat-by-default — borders, not shadows, carry hierarchy. The sole real shadow is on the modal panel.",
+      "Three earth-tone accents (moss, solar amber, coastal blue) marking category, never branding.",
+      "Keyboard-first: every action has a key; no animation announces success."
+    ],
+    "rules": [
+      { "name": "The Paper-Not-Phosphor Rule", "body": "No #000, no #fff for text. No neon, no gradient, no glow, no dark mode. The surface is warm cream and the ink is warm near-black. Anything else is a regression.", "section": "colors" },
+      { "name": "The One Accent Per Column Rule", "body": "Moss = interested. Solar Amber = due / destructive. Coastal Blue = applied. Never paint a card with an accent. Never use an accent for visual interest. If a new column or status appears, it does not get a fourth accent — it gets a label.", "section": "colors" },
+      { "name": "The Saturation Ceiling Rule", "body": "The accents are intentionally muted earth tones. If a swatch looks bright next to its neighbors, it is wrong. Bright is for crypto dashboards.", "section": "colors" },
+      { "name": "The Serif-for-Names Rule", "body": "Source Serif 4 only appears on names of entities — the product itself, a company, a person. Never on body text, never on headings, never as decoration. When you see the serif, it means: this is a thing with an identity.", "section": "typography" },
+      { "name": "The Tabular Numerics Rule", "body": "Every score, every salary, every date, every count uses font-variant-numeric: tabular-nums. Stacked rows of numbers must align column-true. Proportional digits are forbidden in any data column.", "section": "typography" },
+      { "name": "The Uppercase Label Rule", "body": "Uppercase is reserved for the 11px status eyebrow with letter-spacing 0.05em. Never use uppercase elsewhere — not on buttons, not on headings, not for emphasis.", "section": "typography" },
+      { "name": "The Flat-by-Default Rule", "body": "Surfaces sit at the page level. No cards-within-cards. No nested elevation. If a thing needs to stand out, change its border or invert its color — do not lift it.", "section": "elevation" },
+      { "name": "The Borders-Do-the-Work Rule", "body": "Hierarchy is carried by Line / Line Strong / Line Hover, not by shadow. Hover deepens; focus inverts the border to Hearth Ink with a 2px outline offset 2px outside.", "section": "elevation" },
+      { "name": "The One-Real-Shadow Rule", "body": "The modal panel is the only surface allowed a true ink-tinted shadow. Everything else uses a 1px hairline at most.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the surface warm cream (#faf7f0) and the text warm near-black (#1a1815). The paper texture overlay is a feature, not a backdrop; preserve it.",
+      "Do use Source Serif 4 only on names of entities — the product, a company, a person. Hanken Grotesk does the rest.",
+      "Do use tabular numerics on every score, salary, date, and count. Stacked numbers must align column-true.",
+      "Do use the three earth accents (Moss, Solar Amber, Coastal Blue) only as semantic column markers. One accent per status, never as decoration.",
+      "Do keep surfaces flat. Borders deepen on hover (Line → Line Hover); focus inverts the border to Hearth Ink with a 2px outline offset 2px outside.",
+      "Do use the Primary button treatment (Hearth Ink + Daybreak Cream) for the one selected pill in any toggle or tab group. Inversion is the selection tell.",
+      "Do add new animations only via opacity and transform with ease-out curves, and always check prefers-reduced-motion: reduce.",
+      "Do make every action keyboard-reachable. The g-prefix shortcut and the ? overlay set the bar — new features inherit it."
+    ],
+    "donts": [
+      "Don't drift toward the LinkedIn / Indeed style: busy, ad-laden, recruiter-shaped UX, social-network noise, people you may know, skill endorsements. JobNess is the antidote.",
+      "Don't drift toward crypto / fintech-bro neon dark mode: glow effects, animated gradients, big-number-small-label hero metrics, neon-on-black palette. JobNess is paper, not phosphor.",
+      "Don't drift toward generic SaaS dashboard clichés: identical card grids, gradient text, purple accents, AI-slop polish, the hero-metric template.",
+      "Don't add productivity gamification — streaks, confetti, completion percentages, celebratory toasts. State changes are observed, not announced.",
+      "Don't use #000 or #fff for text. The pure-black/pure-white pair is the visual signature of nothing in particular; this system has a temperature.",
+      "Don't use border-left greater than 1px as a colored stripe on cards or alerts. It is never the right answer.",
+      "Don't combine background-clip: text with a gradient. Gradient text is forbidden. Emphasis comes from weight or size.",
+      "Don't nest cards inside cards. The Flat-by-Default rule applies recursively.",
+      "Don't use uppercase outside the 11px status eyebrow.",
+      "Don't introduce a fourth accent color. If a new column or status appears, it gets a label, not a color.",
+      "Don't animate layout properties (width, height, top, margin). Transform and opacity only, ease-out.",
+      "Don't use modals for anything that could be inline. The dialog is the single shadowed surface in the system; it costs attention to open."
+    ]
+  }
+}

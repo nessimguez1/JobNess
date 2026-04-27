@@ -247,7 +247,7 @@ export default function Feed() {
             ref={searchRef}
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Filter — / to focus"
+            placeholder="Filter (/ to focus)"
             className="w-full bg-card border b-line rounded-md pl-8 pr-3 py-1.5 text-[13px] placeholder:t-dim min-h-9"
           />
         </label>
@@ -268,7 +268,7 @@ export default function Feed() {
                 aria-checked={selected}
                 type="button"
                 onClick={() => setFilter(f)}
-                className={`px-2.5 min-h-8 rounded text-[13px] num font-medium flex items-center gap-1.5 shrink-0 transition-colors ${selected ? 'bg-ink t-paper' : 't-muted hover:t-ink'}`}
+                className={`px-2.5 min-h-9 rounded text-[13px] num font-medium flex items-center gap-1.5 shrink-0 transition-colors ${selected ? 'bg-ink t-paper' : 't-muted hover:t-ink'}`}
               >
                 {FILTER_LABEL[f]}
                 <span className={`text-[11px] font-semibold ${selected ? 'opacity-80' : 'opacity-60'}`}>{count}</span>

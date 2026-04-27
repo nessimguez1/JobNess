@@ -135,7 +135,7 @@ export default function Terminal() {
               }}
               aria-label="Keyboard shortcuts (?)"
               title="? for shortcuts"
-              className="btn-ghost h-9 w-9 hidden sm:inline-flex items-center justify-center rounded"
+              className="btn-ghost h-9 w-9 inline-flex items-center justify-center rounded"
             >
               <Keyboard size={14} aria-hidden="true" />
             </button>

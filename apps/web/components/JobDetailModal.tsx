@@ -78,8 +78,8 @@ export default function JobDetailModal({ job, onClose, onDraftEmail, onMove, onT
           </section>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <a href={job.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 border b-line rounded-md bg-soft hover:border-b-line-strong transition-colors">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <a href={job.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-md bg-soft hover:bg-softer transition-colors">
             <div>
               <div className="t-muted num text-[11px] uppercase tracking-wider font-semibold">Posting</div>
               <div className="t-ink text-[13px]">{job.source}</div>
@@ -87,7 +87,7 @@ export default function JobDetailModal({ job, onClose, onDraftEmail, onMove, onT
             <ExternalLink size={14} className="t-muted" aria-hidden="true" />
           </a>
           {job.company_linkedin && (
-            <a href={job.company_linkedin} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 border b-line rounded-md bg-soft hover:border-b-line-strong transition-colors">
+            <a href={job.company_linkedin} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-md bg-soft hover:bg-softer transition-colors">
               <div>
                 <div className="t-muted num text-[11px] uppercase tracking-wider font-semibold">Company</div>
                 <div className="t-ink text-[13px]">LinkedIn</div>
@@ -96,7 +96,7 @@ export default function JobDetailModal({ job, onClose, onDraftEmail, onMove, onT
             </a>
           )}
           {job.company_site && (
-            <a href={job.company_site} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 border b-line rounded-md bg-soft hover:border-b-line-strong transition-colors">
+            <a href={job.company_site} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-md bg-soft hover:bg-softer transition-colors">
               <div>
                 <div className="t-muted num text-[11px] uppercase tracking-wider font-semibold">Company</div>
                 <div className="t-ink text-[13px]">Website</div>
@@ -105,7 +105,7 @@ export default function JobDetailModal({ job, onClose, onDraftEmail, onMove, onT
             </a>
           )}
           {job.hm_linkedin && (
-            <a href={job.hm_linkedin} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 border b-olive-soft rounded-md bg-forest-soft transition-colors">
+            <a href={job.hm_linkedin} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-md bg-forest-soft hover:opacity-90 transition-opacity">
               <div>
                 <div className="t-forest num text-[11px] uppercase tracking-wider font-semibold">Hiring Mgr</div>
                 <div className="t-ink text-[13px]">LinkedIn</div>

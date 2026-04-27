@@ -105,7 +105,7 @@ export default function ScrapeStatus() {
           aria-haspopup="dialog"
           aria-expanded={open}
           aria-label="Scrape status details"
-          className="text-[12px] num t-muted hover:t-ink transition-colors flex items-center gap-1 min-h-8 px-1"
+          className="text-[12px] num t-muted hover:t-ink transition-colors flex items-center gap-1 min-h-9 px-1"
         >
           <span className={running ? 't-steel font-semibold' : ''}>{summary}</span>
         </button>

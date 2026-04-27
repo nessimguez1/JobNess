@@ -132,7 +132,7 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
           </div>
           <div className="min-w-0">
             <div className="t-muted num text-[11px] uppercase tracking-wider font-semibold">Draft for</div>
-            <h2 id={titleId} className="t-ink text-[14px] font-medium truncate">{job.company} — {job.title}</h2>
+            <h2 id={titleId} className="t-ink text-[14px] font-medium truncate">{job.company} · {job.title}</h2>
           </div>
         </div>
         <button
@@ -143,24 +143,25 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
         ><X size={16} aria-hidden="true" /></button>
       </div>
 
-      <div role="tablist" aria-label="Email type" className="flex items-center border-b b-line bg-paper overflow-x-auto scroll-thin">
-        {([
-          { k: 'cold'     as const, label: 'Cold Apply',  icon: <Send     size={13} aria-hidden="true" /> },
-          { k: 'warm'     as const, label: 'Warm Intro',  icon: <Mail     size={13} aria-hidden="true" /> },
-          { k: 'linkedin' as const, label: 'LinkedIn DM', icon: <Linkedin size={13} aria-hidden="true" /> },
-        ]).map(t => (
-          <button
-            type="button"
-            key={t.k}
-            role="tab"
-            aria-selected={tab === t.k}
-            onClick={() => setTab(t.k)}
-            className={`px-4 py-2.5 text-[13px] num flex items-center gap-1.5 border-b-2 transition-colors shrink-0 ${tab === t.k ? 't-ink font-semibold' : 't-muted border-transparent hover:t-ink'}`}
-            style={{ borderBottomColor: tab === t.k ? 'var(--ink)' : 'transparent' }}
-          >
-            {t.icon} {t.label}
-          </button>
-        ))}
+      <div className="px-4 py-3 border-b b-line bg-paper">
+        <div role="tablist" aria-label="Email type" className="inline-flex items-center gap-0.5 bg-card border b-line rounded-md p-0.5 overflow-x-auto scroll-thin max-w-full">
+          {([
+            { k: 'cold'     as const, label: 'Cold Apply',  icon: <Send     size={13} aria-hidden="true" /> },
+            { k: 'warm'     as const, label: 'Warm Intro',  icon: <Mail     size={13} aria-hidden="true" /> },
+            { k: 'linkedin' as const, label: 'LinkedIn DM', icon: <Linkedin size={13} aria-hidden="true" /> },
+          ]).map(t => (
+            <button
+              type="button"
+              key={t.k}
+              role="tab"
+              aria-selected={tab === t.k}
+              onClick={() => setTab(t.k)}
+              className={`px-2.5 min-h-9 rounded text-[13px] num font-medium flex items-center gap-1.5 shrink-0 transition-colors ${tab === t.k ? 'bg-ink t-paper' : 't-muted hover:t-ink'}`}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="p-4 space-y-3 overflow-y-auto scroll-thin flex-1">
@@ -234,12 +235,12 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
         {!job.fit_note && (
           <div role="note" className="flex items-start gap-2 p-2.5 bg-brick-soft border b-brick-soft rounded-md text-[13px] t-brick">
             <AlertCircle size={14} className="mt-0.5 shrink-0" aria-hidden="true" />
-            <div><span className="font-semibold">Fit analysis missing</span> — email quality will be lower. Add context above to compensate.</div>
+            <div><span className="font-semibold">Fit analysis missing.</span> Email quality will be lower. Add context above to compensate.</div>
           </div>
         )}
 
         {hasCopiedOnce ? (
-          <section aria-labelledby="log-outreach-heading" className="border b-line rounded-lg p-3 space-y-2.5 bg-soft fade-in">
+          <section aria-labelledby="log-outreach-heading" className="rounded-lg p-3 space-y-2.5 bg-soft fade-in">
             <div className="flex items-center gap-2">
               <Check size={13} className="t-forest" aria-hidden="true" />
               <h3 id="log-outreach-heading" className="t-ink num text-[12px] uppercase tracking-wider font-semibold">Log this outreach</h3>
@@ -275,7 +276,7 @@ export default function EmailModal({ job, onClose, onMarkApplied }: Props) {
                       role="radio"
                       aria-checked={method === m}
                       onClick={() => setMethod(m)}
-                      className={`px-2.5 py-1 min-h-8 rounded text-[13px] num font-medium capitalize border transition-colors ${method === m ? 'bg-ink t-paper b-ink' : 'bg-paper b-line t-muted hover:t-ink'}`}
+                      className={`px-2.5 min-h-9 rounded text-[13px] num font-medium capitalize border transition-colors ${method === m ? 'bg-ink t-paper b-ink' : 'bg-paper b-line t-muted hover:t-ink'}`}
                     >
                       {m}
                     </button>

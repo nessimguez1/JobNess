@@ -42,7 +42,7 @@ function QueueRowImpl({ job, isFocused, isDueToday, onMove, onOpen, onTrash, onD
       data-job-id={job.id}
       tabIndex={0}
       role="button"
-      aria-label={`${job.company} — ${job.title} — ${status.label}`}
+      aria-label={`${job.company}, ${job.title}, ${status.label}`}
       onClick={() => onOpen(job)}
       onKeyDown={handleKey}
       className={`group relative bg-card border rounded-lg px-4 py-3 transition-all cursor-pointer ${isFocused ? 'b-ink shadow-md' : 'b-line hover:b-line-strong'}`}
@@ -87,7 +87,7 @@ function QueueRowImpl({ job, isFocused, isDueToday, onMove, onOpen, onTrash, onD
               <button
                 type="button"
                 onClick={e => { e.stopPropagation(); setShowFit(v => !v); }}
-                className="t-muted text-[12px] num underline decoration-dotted underline-offset-2 hover:t-ink"
+                className="min-h-9 -mx-1 px-1 inline-flex items-center t-muted text-[12px] num underline decoration-dotted underline-offset-2 hover:t-ink"
                 aria-expanded={showFit}
               >
                 {showFit ? 'hide fit' : 'why it fits'}

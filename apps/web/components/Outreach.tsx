@@ -56,7 +56,7 @@ export default function Outreach() {
     for (const c of (companiesRes.data ?? []) as { id: string; name: string }[]) companyName.set(c.id, c.name);
     const jobName = new Map<string, string>();
     for (const j of (jobsRes.data ?? []) as { id: string; company: string; title: string }[]) {
-      jobName.set(j.id, `${j.company} — ${j.title}`);
+      jobName.set(j.id, `${j.company} · ${j.title}`);
     }
 
     const hydrated: Row[] = list.map(r => ({
@@ -120,7 +120,7 @@ export default function Outreach() {
           <input value={q} onChange={e => setQ(e.target.value)}
             placeholder="Search company, recipient, subject…"
             aria-label="Search outreach"
-            className="w-full bg-card border b-line rounded-md pl-8 pr-3 py-1.5 text-[13px] placeholder:t-dim" />
+            className="w-full bg-card border b-line rounded-md pl-8 pr-3 py-1.5 text-[13px] placeholder:t-dim min-h-9" />
         </div>
 
         <label className="relative">
@@ -140,7 +140,7 @@ export default function Outreach() {
           {(['all', 'pending', 'due'] as const).map(s => (
             <button type="button" key={s} role="radio" aria-checked={scope === s}
               onClick={() => setScope(s)}
-              className={`px-2.5 py-1 min-h-8 rounded text-[13px] num font-medium capitalize transition-colors ${scope === s ? 'bg-ink t-paper' : 't-muted hover:t-ink'}`}>
+              className={`px-2.5 min-h-9 rounded text-[13px] num font-medium capitalize transition-colors ${scope === s ? 'bg-ink t-paper' : 't-muted hover:t-ink'}`}>
               {s}
             </button>
           ))}
@@ -165,7 +165,7 @@ export default function Outreach() {
       ) : (
         <div className="bg-card border b-line rounded-lg overflow-x-auto">
           <table className="w-full min-w-[720px] text-[13px] num">
-            <caption className="sr-only">Outreach log — {filtered.length} entries</caption>
+            <caption className="sr-only">Outreach log: {filtered.length} entries</caption>
             <thead className="bg-soft border-b b-line t-muted uppercase tracking-wider text-[11px] font-semibold">
               <tr>
                 <th scope="col" className="text-left px-3 py-2 w-[90px]">Sent</th>

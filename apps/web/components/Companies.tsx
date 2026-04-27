@@ -47,7 +47,7 @@ type Filter = {
 function CompanyEmailModal({ company, onClose, onLogged }: { company: Company; onClose: () => void; onLogged: (companyId: string, sentAt: string, followUpAt?: string) => void }) {
   const [role, setRole]       = useState('Business Development / Partnerships');
   const [context, setContext] = useState('');
-  const [subject, setSubject] = useState(`Speculative note — ${company.name}`);
+  const [subject, setSubject] = useState(`Speculative note · ${company.name}`);
   const [body, setBody]       = useState('');
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError]     = useState('');
@@ -190,7 +190,7 @@ function CompanyEmailModal({ company, onClose, onLogged }: { company: Company; o
         </div>
 
         {hasCopiedOnce ? (
-          <section aria-labelledby="company-log-heading" className="border b-line rounded-lg p-3 space-y-2.5 bg-soft fade-in">
+          <section aria-labelledby="company-log-heading" className="rounded-lg p-3 space-y-2.5 bg-soft fade-in">
             <div className="flex items-center gap-2">
               <Check size={13} className="t-forest" aria-hidden="true" />
               <h3 id="company-log-heading" className="t-ink num text-[12px] uppercase tracking-wider font-semibold">Log this outreach</h3>
@@ -214,7 +214,7 @@ function CompanyEmailModal({ company, onClose, onLogged }: { company: Company; o
                 <div role="radiogroup" aria-label="Send method" className="flex gap-1 flex-wrap">
                   {(['email', 'linkedin', 'website'] as OutreachMethod[]).map(m => (
                     <button type="button" key={m} role="radio" aria-checked={method === m} onClick={() => setMethod(m)}
-                      className={`px-2.5 py-1 min-h-8 rounded text-[13px] num font-medium capitalize border transition-colors ${method === m ? 'bg-ink t-paper b-ink' : 'bg-paper b-line t-muted hover:t-ink'}`}>
+                      className={`px-2.5 min-h-9 rounded text-[13px] num font-medium capitalize border transition-colors ${method === m ? 'bg-ink t-paper b-ink' : 'bg-paper b-line t-muted hover:t-ink'}`}>
                       {m}
                     </button>
                   ))}
@@ -287,7 +287,7 @@ function CompanyCard({ company, onDraft, onTogglePin }: {
           <span className="text-[13px] t-ink font-semibold num">{company.mono ?? genMono(company.name)}</span>
         </div>
         <div className="min-w-0 flex-1">
-          <div className={`t-ink leading-tight truncate ${company.pinned ? 'font-serif-display text-[17px]' : 'text-[15px] font-semibold'}`}>{company.name}</div>
+          <div className="font-serif-display t-ink leading-tight truncate text-[17px]">{company.name}</div>
           <div className="t-muted text-[12px] num mt-0.5 flex items-center gap-1.5">
             {company.sector && <span className="truncate">{company.sector}</span>}
             {company.ats === 'custom' && (
@@ -308,7 +308,7 @@ function CompanyCard({ company, onDraft, onTogglePin }: {
             <Briefcase size={12} aria-hidden="true" /> {company.job_count} open
           </div>
         ) : (
-          <div className="t-dim text-[12px] num">No open jobs</div>
+          <div className="t-muted text-[12px] num">No open jobs</div>
         )}
         {company.priority === 'high' && (
           <div className="bg-ink t-paper text-[11px] num uppercase tracking-wider px-2 py-0.5 rounded font-semibold">high</div>
@@ -445,7 +445,7 @@ export default function Companies() {
           <input value={filter.q} onChange={e => setFilter(f => ({ ...f, q: e.target.value }))}
             placeholder="Search company…"
             aria-label="Search company"
-            className="w-full bg-card border b-line rounded-md pl-8 pr-3 py-1.5 text-[13px] placeholder:t-dim" />
+            className="w-full bg-card border b-line rounded-md pl-8 pr-3 py-1.5 text-[13px] placeholder:t-dim min-h-9" />
         </div>
 
         <label className="relative">
@@ -463,7 +463,7 @@ export default function Companies() {
           {(['all', 'high', 'med', 'low'] as const).map(p => (
             <button type="button" key={p} role="radio" aria-checked={filter.priority === p}
               onClick={() => setFilter(f => ({ ...f, priority: p }))}
-              className={`px-2.5 py-1 min-h-8 rounded text-[13px] num font-medium capitalize transition-colors ${filter.priority === p ? 'bg-ink t-paper' : 't-muted hover:t-ink'}`}>
+              className={`px-2.5 min-h-9 rounded text-[13px] num font-medium capitalize transition-colors ${filter.priority === p ? 'bg-ink t-paper' : 't-muted hover:t-ink'}`}>
               {p}
             </button>
           ))}
