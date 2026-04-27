@@ -4,6 +4,7 @@ import { run as runCareerPages } from './scrapers/career-pages.js';
 import { run as runLinkedInJobs } from './scrapers/linkedin-jobs.js';
 import { run as runLinkedInPosts } from './scrapers/linkedin-posts.js';
 import { run as runDrushim } from './scrapers/drushim.js';
+import { run as runEFinancialCareers } from './scrapers/efinancialcareers.js';
 import { scoreJob } from './scorer.js';
 import { parseSalaryNIS } from './utils/fx.js';
 import { logger } from './utils/logger.js';
@@ -24,15 +25,47 @@ function isBlocked(company: string, patterns: string[]): boolean {
   return patterns.some(p => lower.includes(p.toLowerCase()));
 }
 
-const ISRAEL_PASS = [
-  'israel', 'tel aviv', 'haifa', 'jerusalem', 'beer sheva', 'herzliya', 'petah tikva',
-  'remote', 'worldwide', 'anywhere', 'hybrid', 'global', 'europe', 'international',
+// Permissive on purpose. The scorer makes the final geo call (Miami requires
+// explicit visa+relocation language to pass; "Europe" without Israel-friendly
+// language hard-fails at the scorer).
+const ACCEPTABLE_LOCATIONS = [
+  // Israel
+  'israel', 'tel aviv', 'tel-aviv', 'haifa', 'jerusalem', 'beer sheva', 'beersheba',
+  'herzliya', 'petah tikva', 'petach tikva', 'ramat gan', 'rishon le', 'netanya',
+  'holon', 'kfar saba', 'raanana', "ra'anana", 'givatayim', 'bnei brak',
+  // Miami (scorer enforces visa+relocation language)
+  'miami', 'florida',
+  // Remote / global
+  'remote', 'worldwide', 'anywhere', 'hybrid', 'global', 'remote-first', 'remote-friendly',
+];
+
+const HARD_BLOCK_LOCATIONS = [
+  // France
+  'france', 'paris', 'lyon', 'marseille', 'bordeaux', 'toulouse', 'nice', 'lille', 'nantes',
+  // Switzerland
+  'switzerland', 'suisse', 'schweiz', 'geneva', 'genève', 'geneve', 'zurich', 'zürich', 'lausanne', 'basel',
+  // UK
+  'london', 'united kingdom', 'manchester', 'edinburgh',
+  // Singapore
+  'singapore',
+  // Other commonly-listed but excluded
+  'germany', 'berlin', 'munich', 'frankfurt',
+  'netherlands', 'amsterdam',
+  'spain', 'madrid', 'barcelona',
+  'italy', 'milan', 'rome',
+  'dubai', 'abu dhabi', 'uae',
+  'lisbon', 'portugal',
+  // Note: NYC, Boston, SF intentionally NOT here — let the scorer decide via
+  // the visa rule. If the user wants those filtered too, add them here.
 ];
 
 function isLocationAllowed(location: string | undefined): boolean {
   if (!location) return true; // unknown location passes through — scorer will judge
   const loc = location.toLowerCase();
-  return ISRAEL_PASS.some(kw => loc.includes(kw));
+  // Acceptable wins over block (e.g. "Miami / Remote" passes via 'miami' or 'remote').
+  if (ACCEPTABLE_LOCATIONS.some(kw => loc.includes(kw))) return true;
+  if (HARD_BLOCK_LOCATIONS.some(kw => loc.includes(kw))) return false;
+  return true; // unknown territory → let scorer judge
 }
 
 // Title pre-filter — drop obvious non-fits BEFORE paying an LLM scoring call.
@@ -279,10 +312,11 @@ async function _runAllScrapersInner(): Promise<void> {
   // Sources run in parallel — each owns its own scrape_runs row + error handling,
   // so Promise.all is safe. Total wall time becomes max(slowest) instead of sum(all).
   await Promise.all([
-    runSource('LinkedIn',     runLinkedInJobs,  patterns, minSalary),
-    runSource('HiddenMarket', runLinkedInPosts, patterns, minSalary),
-    runSource('CareerPage',   runCareerPages,   patterns, minSalary),
-    runSource('Drushim',      runDrushim,       patterns, minSalary),
+    runSource('LinkedIn',          runLinkedInJobs,      patterns, minSalary),
+    runSource('HiddenMarket',      runLinkedInPosts,     patterns, minSalary),
+    runSource('CareerPage',        runCareerPages,       patterns, minSalary),
+    runSource('Drushim',           runDrushim,           patterns, minSalary),
+    runSource('eFinancialCareers', runEFinancialCareers, patterns, minSalary),
   ]);
 
   // Refresh per-company job counts so the Companies page is in sync.
