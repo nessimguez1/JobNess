@@ -1,5 +1,6 @@
 import type { ScrapedJob, JobSource } from '@jobness/shared';
 import { jobId, mono } from './hash.js';
+import { logger } from './logger.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // JSON-LD extractor for schema.org JobPosting microdata.
@@ -149,7 +150,8 @@ const BROWSER_HEADERS = {
   'Accept-Encoding': 'gzip, deflate, br',
 };
 
-/** Standard fetch with timeout + browser UA. Used by all HTML-scrape scrapers. */
+/** Standard fetch with timeout + browser UA. Logs every failure visibly so we
+ *  can diagnose blocked / redirected / captcha-walled scrapes from Railway logs. */
 export async function fetchHtml(url: string, timeoutMs = 12_000): Promise<string | null> {
   try {
     const res = await fetch(url, {
@@ -157,9 +159,17 @@ export async function fetchHtml(url: string, timeoutMs = 12_000): Promise<string
       signal: AbortSignal.timeout(timeoutMs),
       redirect: 'follow',
     });
-    if (!res.ok) return null;
-    return await res.text();
-  } catch {
+    if (!res.ok) {
+      logger.warn({ url, status: res.status }, 'fetchHtml non-200');
+      return null;
+    }
+    const html = await res.text();
+    if (html.length < 500) {
+      logger.warn({ url, length: html.length, preview: html.slice(0, 200) }, 'fetchHtml suspiciously short');
+    }
+    return html;
+  } catch (err) {
+    logger.warn({ url, err: String(err) }, 'fetchHtml threw');
     return null;
   }
 }
